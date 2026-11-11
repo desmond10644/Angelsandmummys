@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
 import { adminRequest } from "../services/adminApi";
 import "./Admin.css";
@@ -75,7 +75,10 @@ function AdminLogin() {
             {!loading && <ArrowRight size={17} aria-hidden="true" />}
           </button>
         </form>
-        <a className="admin-back-link" href="/">Back to the store</a>
+        <div className="admin-login-links">
+          <Link className="admin-back-link" to="/login">Customer sign in</Link>
+          <Link className="admin-back-link" to="/">Back to the store</Link>
+        </div>
       </section>
       <aside className="admin-login-aside">
         <span>ANGELS & MUMMY'S</span>

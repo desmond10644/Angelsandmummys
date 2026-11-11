@@ -682,10 +682,16 @@
 }
 
 .admin-back-link {
-  margin-top: 23px;
   align-self: flex-start;
   color: #716b73;
   font-size: 12px;
+}
+
+.admin-login-links {
+  margin-top: 23px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
 }
 
 .admin-back-link:hover {

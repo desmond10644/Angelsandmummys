@@ -148,6 +148,53 @@
   line-height: 1.6;
 }
 
+.am-auth-account-switch {
+  margin: -7px 0 23px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  border: 1px solid #eee3e9;
+  border-radius: 9px;
+  background: #faf7f9;
+}
+
+.am-auth-account-switch a {
+  min-width: 0;
+  min-height: 40px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 6px;
+  color: #766b71;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.am-auth-account-switch a:hover,
+.am-auth-account-switch a:focus-visible {
+  color: var(--brand-dark, #ad0865);
+}
+
+.am-auth-account-switch a.is-current {
+  background: #ffffff;
+  color: var(--brand-dark, #ad0865);
+  box-shadow: 0 1px 4px rgba(80, 38, 58, 0.1);
+}
+
+.am-auth-account-switch a:focus-visible {
+  outline: 3px solid rgba(210, 10, 122, 0.3);
+  outline-offset: 2px;
+}
+
+.am-auth-account-switch svg {
+  flex: 0 0 auto;
+}
+
 .am-auth-form {
   display: flex;
   flex-direction: column;
