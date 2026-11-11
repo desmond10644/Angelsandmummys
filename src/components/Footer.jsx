@@ -55,7 +55,16 @@ function Footer() {
         <div className="am-footer-column am-contact-column">
           <h3>Contact Information</h3>
           <p><Mail size={17} /> <a href="mailto:info@angelsandmummy.ng">info@angelsandmummy.ng</a></p>
-          <p><MapPin size={17} /> Emco Plaza, Okpanam Road, Asaba, Delta State.</p>
+          <p>
+            <MapPin size={17} />
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Emco+Plaza%2C+Okpanam+Road%2C+Asaba%2C+Delta+State"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Emco Plaza, Okpanam Road, Asaba, Delta State.
+            </a>
+          </p>
         </div>
 
       </div>

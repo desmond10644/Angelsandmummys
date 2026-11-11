@@ -1,11 +1,11 @@
 .admin-shell {
-  --admin-ink: #282429;
-  --admin-muted: #77727a;
-  --admin-border: #e9e3e7;
+  --admin-ink: #30272b;
+  --admin-muted: #756a6f;
+  --admin-border: #f0c5da;
   --admin-paper: #fff;
-  --admin-canvas: #f7f5f6;
-  --admin-accent: #bb176d;
-  --admin-accent-dark: #921052;
+  --admin-canvas: #fff8fb;
+  --admin-accent: #d20a7a;
+  --admin-accent-dark: #ad0865;
   --admin-green: #31695c;
   min-height: 100vh;
   background: var(--admin-canvas);
@@ -14,6 +14,106 @@
   font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
   font-size: 14px;
   line-height: 1.45;
+}
+
+.admin-shell {
+  animation: admin-page-in 420ms ease both;
+}
+
+.admin-sidebar {
+  background: var(--brand-soft, #fff1f7);
+}
+
+.admin-nav-item,
+.admin-primary-button,
+.admin-secondary-button,
+.admin-icon-button,
+.admin-logout-button,
+.admin-row-actions button {
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.admin-primary-button:hover:not(:disabled),
+.admin-icon-button:hover:not(:disabled),
+.admin-logout-button:hover,
+.admin-row-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.admin-table tbody tr {
+  animation: admin-row-in 360ms ease both;
+}
+
+.admin-table tbody tr:nth-child(2) { animation-delay: 35ms; }
+.admin-table tbody tr:nth-child(3) { animation-delay: 70ms; }
+.admin-table tbody tr:nth-child(4) { animation-delay: 105ms; }
+.admin-table tbody tr:nth-child(5) { animation-delay: 140ms; }
+
+.admin-dialog-backdrop {
+  animation: admin-fade-in 180ms ease both;
+}
+
+.admin-product-dialog,
+.admin-login-panel {
+  animation: admin-card-in 260ms ease both;
+}
+
+.admin-login-aside {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-login-aside::after {
+  position: absolute;
+  top: -110px;
+  right: -170px;
+  width: 430px;
+  height: 430px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+@keyframes admin-page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes admin-row-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes admin-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes admin-card-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell,
+  .admin-table tbody tr,
+  .admin-dialog-backdrop,
+  .admin-product-dialog,
+  .admin-login-panel {
+    animation: none;
+  }
+
+  .admin-shell *,
+  .admin-login-page * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .admin-shell button,
@@ -564,7 +664,7 @@
 .admin-product-form textarea:focus,
 .admin-login-form input:focus {
   border-color: var(--admin-accent);
-  box-shadow: 0 0 0 3px rgba(187, 23, 109, 0.1);
+  box-shadow: 0 0 0 3px rgba(210, 10, 122, 0.1);
 }
 
 .admin-dialog-actions {
@@ -594,19 +694,21 @@
 }
 
 .admin-login-page {
-  --admin-ink: #282429;
-  --admin-muted: #77727a;
-  --admin-border: #e9e3e7;
+  --admin-ink: #30272b;
+  --admin-muted: #756a6f;
+  --admin-border: #f0c5da;
   --admin-paper: #fff;
-  --admin-canvas: #f7f5f6;
-  --admin-accent: #bb176d;
-  --admin-accent-dark: #921052;
+  --admin-canvas: #fff8fb;
+  --admin-accent: #d20a7a;
+  --admin-accent-dark: #ad0865;
   --admin-green: #31695c;
   min-height: 100vh;
   display: grid;
   grid-template-columns: minmax(370px, 0.88fr) minmax(400px, 1.12fr);
-  background: #f7f5f6;
-  color: #282429;
+  background:
+    radial-gradient(ellipse at 12% 9%, rgba(210, 10, 122, 0.07), transparent 28%),
+    var(--admin-canvas);
+  color: var(--admin-ink);
   text-align: left;
   font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
   font-size: 14px;
@@ -694,7 +796,7 @@
 
 .admin-input-wrap:focus-within {
   border-color: var(--admin-accent);
-  box-shadow: 0 0 0 3px rgba(187, 23, 109, 0.1);
+  box-shadow: 0 0 0 3px rgba(210, 10, 122, 0.1);
 }
 
 .admin-input-wrap input {
@@ -734,12 +836,12 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background: #3c3039;
+  background: linear-gradient(145deg, #d6107f 0%, #bd086e 100%);
   color: #fff;
 }
 
 .admin-login-aside > span {
-  color: #e8b6d0;
+  color: #ffe3f1;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -757,11 +859,11 @@
   width: 42px;
   height: 2px;
   margin-bottom: 17px;
-  background: #d65b9b;
+  background: #ffffff;
 }
 
 .admin-login-aside small {
-  color: #d4cbd2;
+  color: rgba(255, 255, 255, 0.82);
   font-size: 10px;
   letter-spacing: 1.3px;
 }

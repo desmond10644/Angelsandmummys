@@ -2,6 +2,9 @@
 import { useState } from "react";
 import "./Contact.css";
 
+const locationUrl =
+  "https://www.google.com/maps/search/?api=1&query=Emco+Plaza%2C+Okpanam+Road%2C+Asaba%2C+Delta+State";
+
 function Contact() {
   const [form, setForm] = useState({
     name: "",
@@ -65,7 +68,11 @@ function Contact() {
             <span>⌖</span>
             <div>
               <h3>Location</h3>
-              <p>Emco Plaza, Okpanam Road, Asaba, Delta State.</p>
+              <p>
+                <a href={locationUrl} target="_blank" rel="noreferrer">
+                  Emco Plaza, Okpanam Road, Asaba, Delta State.
+                </a>
+              </p>
             </div>
           </div>
         </div>
