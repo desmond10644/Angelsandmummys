@@ -1,0 +1,139 @@
+
+.am-about-page {
+  color: #30272b;
+}
+
+.am-about-hero {
+  min-height: 430px;
+  display: flex;
+  align-items: center;
+  padding: 70px 8%;
+  background: linear-gradient(110deg, #fff0f4, #f9e2e9);
+}
+
+.am-about-hero-content {
+  max-width: 650px;
+}
+
+.am-about-hero-content > span,
+.am-about-story-content > span {
+  color: #a94f70;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 13px;
+}
+
+.am-about-hero h1 {
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1.2;
+  margin: 20px 0;
+}
+
+.am-about-hero p,
+.am-about-story-content p {
+  color: #6f6569;
+  line-height: 1.8;
+}
+
+.am-about-button,
+.am-about-cta a {
+  display: inline-block;
+  margin-top: 25px;
+  padding: 14px 25px;
+  background: #b45d7c;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.am-about-story {
+  max-width: 1150px;
+  margin: 80px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 55px;
+}
+
+.am-about-image img {
+  width: 100%;
+  min-height: 300px;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.am-about-story-content h2 {
+  font-size: 32px;
+  margin: 15px 0;
+}
+
+.am-about-values {
+  padding: 65px 20px;
+  text-align: center;
+  background: #fff8fa;
+}
+
+.am-about-values > h2 {
+  margin-bottom: 40px;
+  font-size: 30px;
+}
+
+.am-about-values-grid {
+  max-width: 1100px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.am-about-value-card {
+  padding: 30px 22px;
+  background: white;
+  border: 1px solid #f1e4e9;
+  border-radius: 10px;
+}
+
+.am-about-value-card > span {
+  font-size: 35px;
+  color: #b45d7c;
+}
+
+.am-about-value-card h3 {
+  margin: 15px 0 10px;
+}
+
+.am-about-value-card p {
+  color: #777;
+  line-height: 1.7;
+}
+
+.am-about-cta {
+  padding: 70px 20px;
+  text-align: center;
+}
+
+.am-about-cta h2 {
+  font-size: 30px;
+}
+
+.am-about-cta p {
+  margin-top: 12px;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .am-about-story {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .am-about-values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .am-about-hero {
+    padding: 60px 25px;
+  }
+}

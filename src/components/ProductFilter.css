@@ -1,0 +1,54 @@
+
+.am-product-filter {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.am-filter-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #c27b91;
+  margin-bottom: 20px;
+}
+
+.am-filter-heading h3 {
+  color: #333333;
+  font-size: 16px;
+  margin: 0;
+}
+
+.am-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.am-filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.am-filter-group label {
+  color: #444444;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.am-filter-group select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  outline: none;
+  background: #ffffff;
+  color: #555555;
+  font-size: 13px;
+}
+
+.am-filter-group select:focus {
+  border-color: #c27b91;
+}

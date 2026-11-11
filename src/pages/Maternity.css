@@ -1,0 +1,92 @@
+
+.am-maternity-page {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 30px 25px 70px;
+  color: #302b2d;
+}
+
+.am-maternity-banner {
+  min-height: 250px;
+  padding: 50px 35px;
+  border-radius: 13px;
+  background: linear-gradient(110deg, #f8e9ee, #fbf5f2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.am-maternity-banner span {
+  color: #ad6680;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.am-maternity-banner h1 {
+  font-size: 40px;
+  margin: 12px 0;
+}
+
+.am-maternity-banner p {
+  color: #746a6d;
+  max-width: 500px;
+  line-height: 1.7;
+}
+
+.am-maternity-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 35px 0 20px;
+}
+
+.am-maternity-heading h2 {
+  font-size: 24px;
+}
+
+.am-maternity-heading span {
+  color: #777;
+  font-size: 13px;
+}
+
+.am-maternity-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.am-maternity-empty {
+  text-align: center;
+  padding: 55px 15px;
+  color: #777;
+}
+
+.am-maternity-empty h3 {
+  color: #333;
+}
+
+@media (max-width: 900px) {
+  .am-maternity-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .am-maternity-page {
+    padding: 20px 15px 45px;
+  }
+
+  .am-maternity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .am-maternity-banner {
+    padding: 35px 22px;
+  }
+
+  .am-maternity-banner h1 {
+    font-size: 31px;
+  }
+}

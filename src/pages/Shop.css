@@ -1,0 +1,99 @@
+
+.am-shop {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 30px 25px 60px;
+  color: #302b2d;
+}
+
+.am-shop-banner {
+  background: #fbf1f4;
+  padding: 45px 30px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.am-shop-banner span {
+  color: #b66d86;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.am-shop-banner h1 {
+  font-size: 38px;
+  margin: 10px 0;
+}
+
+.am-shop-banner p {
+  color: #766d70;
+}
+
+.am-shop-toolbar {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) minmax(250px, 320px);
+  gap: 20px;
+  align-items: start;
+}
+
+.am-shop-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0 18px;
+}
+
+.am-shop-heading h2 {
+  font-size: 23px;
+}
+
+.am-shop-heading span {
+  color: #777;
+  font-size: 13px;
+}
+
+.am-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.am-shop-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #777;
+}
+
+.am-shop-empty button {
+  background: #bd7890;
+  color: white;
+  border: 0;
+  border-radius: 5px;
+  padding: 11px 18px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .am-shop-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .am-shop-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .am-shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .am-shop {
+    padding: 20px 15px 45px;
+  }
+
+  .am-shop-banner h1 {
+    font-size: 30px;
+  }
+}

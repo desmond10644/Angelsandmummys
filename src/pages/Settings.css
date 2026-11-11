@@ -1,0 +1,67 @@
+
+.am-settings-page {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 50px 20px;
+}
+
+.am-settings-container {
+  padding: 30px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: white;
+}
+
+.am-settings-container h1 {
+  margin-bottom: 10px;
+}
+
+.am-settings-container > p {
+  margin-bottom: 30px;
+  color: #777;
+}
+
+.am-settings-section {
+  padding: 25px 0;
+  border-top: 1px solid #eee;
+}
+
+.am-settings-section h2 {
+  margin-bottom: 20px;
+  font-size: 19px;
+}
+
+.am-settings-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 0;
+  cursor: pointer;
+}
+
+.am-settings-option span {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.am-settings-option small {
+  color: #777;
+}
+
+.am-settings-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: #b45d7c;
+  cursor: pointer;
+}
+
+.am-settings-logout {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  background: #b42318;
+  color: white;
+  cursor: pointer;
+}

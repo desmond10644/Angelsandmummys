@@ -1,0 +1,92 @@
+
+.am-kids-page {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 30px 25px 70px;
+  color: #302b2d;
+}
+
+.am-kids-banner {
+  min-height: 250px;
+  padding: 50px 35px;
+  border-radius: 13px;
+  background: linear-gradient(110deg, #fff2dc, #f8eaf0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.am-kids-banner span {
+  color: #b07846;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.am-kids-banner h1 {
+  font-size: 40px;
+  margin: 12px 0;
+}
+
+.am-kids-banner p {
+  color: #746a6d;
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.am-kids-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 35px 0 20px;
+}
+
+.am-kids-heading h2 {
+  font-size: 24px;
+}
+
+.am-kids-heading span {
+  color: #777;
+  font-size: 13px;
+}
+
+.am-kids-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.am-kids-empty {
+  text-align: center;
+  padding: 55px 15px;
+  color: #777;
+}
+
+.am-kids-empty h3 {
+  color: #333;
+}
+
+@media (max-width: 900px) {
+  .am-kids-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .am-kids-page {
+    padding: 20px 15px 45px;
+  }
+
+  .am-kids-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .am-kids-banner {
+    padding: 35px 22px;
+  }
+
+  .am-kids-banner h1 {
+    font-size: 31px;
+  }
+}

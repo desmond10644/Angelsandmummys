@@ -1,0 +1,76 @@
+
+.am-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.am-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.am-button-primary {
+  background: #c27b91;
+  color: #ffffff;
+}
+
+.am-button-primary:hover:not(:disabled) {
+  background: #a95e77;
+}
+
+.am-button-outline {
+  background: transparent;
+  color: #c27b91;
+  border: 1px solid #c27b91;
+}
+
+.am-button-outline:hover:not(:disabled) {
+  background: #c27b91;
+  color: #ffffff;
+}
+
+.am-button-danger {
+  background: #dc3545;
+  color: #ffffff;
+}
+
+.am-button-danger:hover:not(:disabled) {
+  background: #b52a37;
+}
+
+.am-button-small {
+  padding: 8px 15px;
+  font-size: 12px;
+}
+
+.am-button-medium {
+  padding: 12px 22px;
+  font-size: 14px;
+}
+
+.am-button-large {
+  padding: 15px 28px;
+  font-size: 16px;
+}
+
+.am-button-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: am-spin 0.7s linear infinite;
+}
+
+@keyframes am-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

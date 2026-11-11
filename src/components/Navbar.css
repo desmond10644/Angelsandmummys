@@ -1,0 +1,133 @@
+
+.am-navbar {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #eeeeee;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.am-navbar-container {
+  max-width: 1250px;
+  margin: auto;
+  padding: 16px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.am-logo {
+  font-size: 25px;
+  font-weight: 800;
+  color: #333333;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.am-logo span {
+  color: #c27b91;
+}
+
+.am-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.am-nav-links a {
+  color: #444444;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.am-nav-links a:hover,
+.am-nav-links a.active {
+  color: #c27b91;
+}
+
+.am-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.am-nav-icon {
+  color: #333333;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  position: relative;
+}
+
+.am-nav-icon:hover {
+  color: #c27b91;
+}
+
+.am-cart-count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #c27b91;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  min-width: 17px;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.am-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333333;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .am-navbar-container {
+    padding: 14px 18px;
+  }
+
+  .am-logo {
+    font-size: 20px;
+  }
+
+  .am-menu-toggle {
+    display: block;
+  }
+
+  .am-nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 10px 20px 20px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .am-nav-links.active {
+    display: flex;
+  }
+
+  .am-nav-links a {
+    width: 100%;
+    padding: 13px 0;
+    border-bottom: 1px solid #eeeeee;
+  }
+
+  .am-navbar-actions {
+    gap: 13px;
+  }
+}

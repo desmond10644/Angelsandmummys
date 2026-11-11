@@ -1,0 +1,92 @@
+
+.am-baby-page {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 30px 25px 70px;
+  color: #302b2d;
+}
+
+.am-baby-banner {
+  min-height: 250px;
+  padding: 50px 35px;
+  border-radius: 13px;
+  background: linear-gradient(110deg, #eaf4f5, #f7f1ec);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.am-baby-banner span {
+  color: #628d91;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.am-baby-banner h1 {
+  font-size: 40px;
+  margin: 12px 0;
+}
+
+.am-baby-banner p {
+  color: #746a6d;
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.am-baby-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 35px 0 20px;
+}
+
+.am-baby-heading h2 {
+  font-size: 24px;
+}
+
+.am-baby-heading span {
+  color: #777;
+  font-size: 13px;
+}
+
+.am-baby-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.am-baby-empty {
+  text-align: center;
+  padding: 55px 15px;
+  color: #777;
+}
+
+.am-baby-empty h3 {
+  color: #333;
+}
+
+@media (max-width: 900px) {
+  .am-baby-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .am-baby-page {
+    padding: 20px 15px 45px;
+  }
+
+  .am-baby-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .am-baby-banner {
+    padding: 35px 22px;
+  }
+
+  .am-baby-banner h1 {
+    font-size: 31px;
+  }
+}
