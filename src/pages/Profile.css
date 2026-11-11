@@ -39,7 +39,7 @@
   padding: 13px 25px;
   border: none;
   border-radius: 6px;
-  background: #b45d7c;
+  background: #d20a7a;
   color: white;
   cursor: pointer;
 }
@@ -62,6 +62,6 @@
 }
 
 .am-profile-links a {
-  color: #a94f70;
+  color: #ad0865;
   text-decoration: none;
 }

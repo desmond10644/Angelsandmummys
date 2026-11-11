@@ -11,7 +11,7 @@
 }
 
 .am-contact-header > span {
-  color: #a94f70;
+  color: #ad0865;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -66,7 +66,7 @@
   display: grid;
   place-items: center;
   background: #fff0f5;
-  color: #a94f70;
+  color: #ad0865;
   border-radius: 50%;
   font-size: 22px;
 }
@@ -104,7 +104,7 @@
   width: 100%;
   margin-top: 20px;
   padding: 14px;
-  background: #b45d7c;
+  background: #d20a7a;
   color: white;
   border: none;
   border-radius: 6px;

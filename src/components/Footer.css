@@ -32,7 +32,7 @@
 }
 
 .am-footer-column h2 span {
-  color: #d68ba3;
+  color: #ee7db4;
 }
 
 .am-footer-column h3 {
@@ -55,7 +55,7 @@
 }
 
 .am-footer-column > a:hover {
-  color: #e6a6bb;
+  color: #ee7db4;
 }
 
 .am-social-links {
@@ -77,7 +77,7 @@
 }
 
 .am-social-links a:hover {
-  background: #c27b91;
+  background: #d20a7a;
 }
 
 .am-contact-column p {
@@ -88,7 +88,7 @@
 
 .am-contact-column svg {
   flex-shrink: 0;
-  color: #e6a6bb;
+  color: #ee7db4;
   margin-top: 4px;
 }
 

@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import { localImages } from "../data/localImages";
 import "./About.css";
 
 function About() {
@@ -23,8 +24,8 @@ function About() {
       <div className="am-about-story">
         <div className="am-about-image">
           <img
-            src="/images/about-us.jpg"
-            alt="Mother spending time with her child"
+            src={localImages.familyShopping}
+            alt="A customer shopping for children's products"
           />
         </div>
 

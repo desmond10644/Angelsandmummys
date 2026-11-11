@@ -18,15 +18,15 @@
 }
 
 .am-logo {
-  font-size: 25px;
-  font-weight: 800;
-  color: #333333;
+  width: 178px;
+  flex-shrink: 0;
+  display: block;
   text-decoration: none;
-  white-space: nowrap;
 }
 
-.am-logo span {
-  color: #c27b91;
+.am-logo img {
+  width: 100%;
+  display: block;
 }
 
 .am-nav-links {
@@ -45,7 +45,7 @@
 
 .am-nav-links a:hover,
 .am-nav-links a.active {
-  color: #c27b91;
+  color: #d20a7a;
 }
 
 .am-navbar-actions {
@@ -63,14 +63,14 @@
 }
 
 .am-nav-icon:hover {
-  color: #c27b91;
+  color: #d20a7a;
 }
 
 .am-cart-count {
   position: absolute;
   top: -10px;
   right: -10px;
-  background: #c27b91;
+  background: #d20a7a;
   color: #ffffff;
   font-size: 10px;
   font-weight: bold;
@@ -96,7 +96,7 @@
   }
 
   .am-logo {
-    font-size: 20px;
+    width: 145px;
   }
 
   .am-menu-toggle {

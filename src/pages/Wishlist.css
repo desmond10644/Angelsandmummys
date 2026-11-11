@@ -28,10 +28,10 @@
 
 .am-wishlist-remove {
   padding: 11px;
-  border: 1px solid #b45d7c;
+  border: 1px solid #d20a7a;
   border-radius: 6px;
   background: white;
-  color: #a94f70;
+  color: #ad0865;
   cursor: pointer;
 }
 
@@ -50,7 +50,7 @@
 .am-wishlist-empty a {
   display: inline-block;
   padding: 12px 22px;
-  background: #b45d7c;
+  background: #d20a7a;
   color: white;
   border-radius: 6px;
   text-decoration: none;

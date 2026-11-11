@@ -1,4 +1,11 @@
 
+:root {
+  --brand: #d20a7a;
+  --brand-dark: #ad0865;
+  --brand-soft: #fff1f7;
+  --brand-border: #f0c5da;
+}
+
 * {
   margin: 0;
   padding: 0;

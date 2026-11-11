@@ -17,7 +17,7 @@
 
 .am-about-hero-content > span,
 .am-about-story-content > span {
-  color: #a94f70;
+  color: #ad0865;
   font-weight: 700;
   letter-spacing: 2px;
   font-size: 13px;
@@ -40,7 +40,7 @@
   display: inline-block;
   margin-top: 25px;
   padding: 14px 25px;
-  background: #b45d7c;
+  background: #d20a7a;
   color: white;
   border-radius: 6px;
   text-decoration: none;
@@ -97,7 +97,7 @@
 
 .am-about-value-card > span {
   font-size: 35px;
-  color: #b45d7c;
+  color: #d20a7a;
 }
 
 .am-about-value-card h3 {

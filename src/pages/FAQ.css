@@ -11,7 +11,7 @@
 }
 
 .am-faq-header > span {
-  color: #a94f70;
+  color: #ad0865;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -61,7 +61,7 @@
 }
 
 .am-faq-icon {
-  color: #b45d7c;
+  color: #d20a7a;
   font-size: 25px;
 }
 
@@ -87,7 +87,7 @@
 .am-faq-contact a {
   display: inline-block;
   padding: 12px 24px;
-  background: #b45d7c;
+  background: #d20a7a;
   color: white;
   text-decoration: none;
   border-radius: 6px;

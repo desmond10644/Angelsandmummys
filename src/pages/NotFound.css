@@ -14,7 +14,7 @@
 
 .am-notfound-number {
   display: block;
-  color: #b45d7c;
+  color: #d20a7a;
   font-size: clamp(90px, 18vw, 150px);
   font-weight: 800;
   line-height: 1;
@@ -47,12 +47,12 @@
 }
 
 .am-notfound-home {
-  background: #b45d7c;
+  background: #d20a7a;
   color: white;
 }
 
 .am-notfound-shop {
-  border: 1px solid #b45d7c;
-  color: #a94f70;
+  border: 1px solid #d20a7a;
+  color: #ad0865;
   background: white;
 }

@@ -18,8 +18,8 @@ function Navbar() {
   return (
     <header className="am-navbar">
       <div className="am-navbar-container">
-        <Link to="/" className="am-logo" onClick={closeMenu}>
-          Angels <span>&</span> Mummies
+        <Link to="/" className="am-logo" onClick={closeMenu} aria-label="Angels & Mummies home">
+          <img src="/logo.jpg" alt="Angels & Mummy's" />
         </Link>
 
         <nav className={`am-nav-links ${menuOpen ? "active" : ""}`}>
@@ -42,7 +42,7 @@ function Navbar() {
             )}
           </Link>
 
-          <Link to="/profile" className="am-nav-icon" aria-label="My account">
+          <Link to="/login" className="am-nav-icon" aria-label="Sign in or create an account">
             <User size={21} />
           </Link>
 
