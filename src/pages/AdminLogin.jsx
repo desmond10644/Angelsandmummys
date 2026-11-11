@@ -4,7 +4,7 @@ import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
 import { adminRequest } from "../services/adminApi";
 import "./Admin.css";
 
-function AdminLogin() {
+function AdminLogin({ embedded = false }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +37,7 @@ function AdminLogin() {
   };
 
   return (
-    <section className="admin-login-page">
+    <section className={`admin-login-page ${embedded ? "admin-login-embedded" : ""}`}>
       <section className="admin-login-panel">
         <a className="admin-wordmark" href="/">A&M <span>OPERATIONS</span></a>
         <p className="admin-eyebrow">STAFF ACCESS</p>

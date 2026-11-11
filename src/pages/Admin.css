@@ -612,6 +612,37 @@
   font-size: 14px;
 }
 
+.admin-login-embedded {
+  min-height: 0;
+  padding: 38px clamp(24px, 6vw, 72px);
+  display: block;
+  border: 1px solid #e9e3e7;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.admin-login-embedded .admin-login-panel {
+  width: min(100%, 560px);
+  min-height: 0;
+  padding: 0;
+  display: block;
+}
+
+.admin-login-embedded .admin-login-panel > .admin-wordmark,
+.admin-login-embedded .admin-login-aside,
+.admin-login-embedded .admin-login-links {
+  display: none;
+}
+
+.admin-login-embedded .admin-login-panel h1 {
+  margin: 6px 0;
+  font-size: 30px;
+}
+
+.admin-login-embedded .admin-login-form {
+  margin-top: 21px;
+}
+
 .admin-login-panel {
   width: min(100%, 470px);
   min-height: 100vh;
@@ -836,6 +867,11 @@
   .admin-login-page {
     min-height: 100vh;
     display: block;
+  }
+
+  .admin-login-embedded {
+    min-height: 0;
+    padding: 28px 22px;
   }
 
   .admin-login-panel {
