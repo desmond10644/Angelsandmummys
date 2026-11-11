@@ -3,37 +3,37 @@ import { localImages } from "./localImages";
 export const products = [
   {
     id: 1,
-    name: "Comfort Maternity Support Belt",
+    name: "Mum & Baby Shopping Essentials",
     category: "Maternity",
     price: 8200,
     rating: 4.8,
     reviews: 124,
     badge: "Best Seller",
-    description: "Supportive belly band designed for comfort through pregnancy and recovery.",
+    description: "Thoughtfully selected essentials for mums and their little ones.",
     image: localImages.familyShopping,
     stock: 12
   },
   {
     id: 2,
-    name: "Nursing Pillow",
-    category: "Maternity",
+    name: "Baby Bouncer Seat",
+    category: "Baby Care",
     price: 14500,
     rating: 4.7,
     reviews: 96,
     badge: "Mother Loved",
-    description: "A cozy pillow for nursing, feeding and relaxing during the early months.",
-    image: localImages.nurserySeat,
+    description: "A soft, supportive seat for comfortable and supervised baby lounging.",
+    image: localImages.babyBouncer,
     stock: 8
   },
   {
     id: 3,
-    name: "Breastfeeding Cover",
-    category: "Maternity",
+    name: "Baby Swing",
+    category: "Baby Care",
     price: 6800,
     rating: 4.6,
     reviews: 74,
-    description: "Lightweight and discreet cover made for easy, comfortable feeding moments.",
-    image: localImages.babySwing,
+    description: "A cozy baby swing with a supportive seat for soothing little ones.",
+    image: localImages.babyWalker,
     stock: 15
   },
   {

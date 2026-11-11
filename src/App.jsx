@@ -33,6 +33,7 @@ import Settings from "./pages/Settings";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
+import AdminHeroSlides from "./pages/AdminHeroSlides";
 import NotFound from "./pages/NotFound";
 
 import "./App.css";
@@ -69,6 +70,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
 
             {/* Information pages */}
             <Route path="/about" element={<About />} />

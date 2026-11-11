@@ -47,6 +47,10 @@ the JWT.
 | POST | `/api/orders` | Signed in | Create an unpaid order |
 | GET | `/api/orders` | Signed in | List the user's orders; admins see all |
 | PATCH | `/api/orders/:id/status` | Admin | Update an order's fulfillment status |
+| GET | `/api/hero-slides` | Public | List published homepage hero slides |
+| GET/POST | `/api/hero-slides/admin` | Admin | List slides or upload a slide image |
+| PUT/DELETE | `/api/hero-slides/admin/:id` | Admin | Edit or delete a slide |
+| PUT | `/api/hero-slides/admin/order` | Admin | Save homepage slide order |
 
 Orders are recorded as unpaid; these endpoints do not collect or verify
 payments. The server calculates totals from database prices and currently adds
@@ -56,3 +60,13 @@ For hosting, configure the same backend variables in the hosting provider's
 environment-variable settings, and set `FRONTEND_URL` to the deployed
 frontend's origin. Set `VITE_API_URL` in the frontend build environment to the
 deployed backend URL.
+
+## Homepage hero slides
+
+The hero slider uses the same Express server, PostgreSQL connection, and admin
+accounts as the rest of the application. After promoting an account to admin
+using the SQL above, sign in at `/admin/hero-slides`. The dashboard supports
+image upload, preview, replacement, deletion, slide text and button editing,
+visibility, and ordering. Images must be JPG, PNG, or WebP and no larger than
+8 MB. Uploaded files are served from `/uploads`; configure `UPLOAD_DIR` to a
+persistent directory when deploying.
