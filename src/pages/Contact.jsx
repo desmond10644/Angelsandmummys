@@ -57,15 +57,7 @@ function Contact() {
             <span>✉</span>
             <div>
               <h3>Email</h3>
-              <p>hello@angelsandmummies.com</p>
-            </div>
-          </div>
-
-          <div className="am-contact-info-item">
-            <span>☎</span>
-            <div>
-              <h3>Phone</h3>
-              <p>Contact number to be added</p>
+              <p><a href="mailto:info@angelsandmummy.ng">info@angelsandmummy.ng</a></p>
             </div>
           </div>
 
@@ -73,7 +65,7 @@ function Contact() {
             <span>⌖</span>
             <div>
               <h3>Location</h3>
-              <p>Nigeria</p>
+              <p>Emco Plaza, Okpanam Road, Asaba, Delta State.</p>
             </div>
           </div>
         </div>

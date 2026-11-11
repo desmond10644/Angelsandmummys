@@ -5,7 +5,6 @@ import {
   MessageCircle,
   Send,
   Mail,
-  Phone,
   MapPin
 } from "lucide-react";
 import "./Footer.css";
@@ -55,9 +54,8 @@ function Footer() {
 
         <div className="am-footer-column am-contact-column">
           <h3>Contact Information</h3>
-          <p><Mail size={17} /> hello@angelsandmummies.com</p>
-          <p><Phone size={17} /> Add your business phone number</p>
-          <p><MapPin size={17} /> Nigeria</p>
+          <p><Mail size={17} /> <a href="mailto:info@angelsandmummy.ng">info@angelsandmummy.ng</a></p>
+          <p><MapPin size={17} /> Emco Plaza, Okpanam Road, Asaba, Delta State.</p>
         </div>
 
       </div>
