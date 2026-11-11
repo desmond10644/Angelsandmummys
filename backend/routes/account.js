@@ -1,9 +1,23 @@
 const express = require("express");
 const pool = require("../db");
-const { requireAuth } = require("../middleware/auth");
+const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
 router.use(requireAuth);
+
+router.get("/customers", requireAdmin, async (req, res) => {
+  const result = await pool.query(
+    `SELECT u.id, u.full_name, u.email, u.phone, u.created_at,
+            COUNT(o.id)::int AS order_count,
+            MAX(o.created_at) AS last_order_at
+     FROM users u
+     LEFT JOIN orders o ON o.user_id = u.id
+     WHERE u.role = 'customer'
+     GROUP BY u.id
+     ORDER BY u.created_at DESC`
+  );
+  return res.json({ customers: result.rows });
+});
 
 router.get("/cart", async (req, res) => {
   const result = await pool.query(

@@ -29,3 +29,11 @@ Slide images are stored on disk and slide details in PostgreSQL. Uploaded
 images must be JPG, PNG, or WebP and no larger than 8 MB. In production, set
 `UPLOAD_DIR` to persistent storage and configure `FRONTEND_URL` and
 `VITE_API_URL` for the deployed origins.
+
+## Manage products, customers, and orders
+
+Register the intended account through the app first, then from the `backend`
+directory run `npm run admin:promote -- admin@example.com`. Sign in at
+`/admin/login` to manage the product catalog, customer directory, and order
+fulfilment. Public registration always creates a customer account. The SQL
+promotion option is also documented in [backend/README.md](./backend/README.md).

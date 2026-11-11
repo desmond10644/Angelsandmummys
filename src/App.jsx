@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -35,55 +35,72 @@ import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import AdminHeroSlides from "./pages/AdminHeroSlides";
 import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import "./App.css";
+
+function AppContent() {
+  const { pathname } = useLocation();
+  const isAdminRoute = pathname.startsWith("/admin");
+
+  return (
+    <div className="app">
+      {!isAdminRoute && <Navbar />}
+
+      <main className="main-content">
+        <Routes>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          {/* Main pages */}
+          <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/maternity" element={<Maternity />} />
+          <Route path="/baby-products" element={<BabyProducts />} />
+          <Route path="/kids" element={<Kids />} />
+
+          {/* Shopping pages */}
+          <Route path="/search" element={<Search />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+
+          {/* Customer account pages */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+
+          {/* Admin pages */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
+
+          {/* Information pages */}
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+
+          {/* Page not found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+
+      {!isAdminRoute && <Footer />}
+    </div>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="app">
-        <Navbar />
-
-        <main className="main-content">
-          <Routes>
-            {/* Main pages */}
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/products/:id" element={<ProductDetails />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/maternity" element={<Maternity />} />
-            <Route path="/baby-products" element={<BabyProducts />} />
-            <Route path="/kids" element={<Kids />} />
-
-            {/* Shopping pages */}
-            <Route path="/search" element={<Search />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/order-success" element={<OrderSuccess />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-
-            {/* Customer account pages */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
-
-            {/* Information pages */}
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-
-            {/* Page not found */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
+      <AppContent />
     </BrowserRouter>
   );
 }
