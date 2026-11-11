@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Phone, UserRound } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
 import "./Auth.css";
 
 function Register() {
@@ -92,6 +92,15 @@ function Register() {
             <h1>Create your account</h1>
             <p>It only takes a moment to get started.</p>
           </div>
+
+          <nav className="am-auth-account-switch" aria-label="Choose account type">
+            <Link className="is-current" to="/register" aria-current="page">
+              <UserRound size={16} aria-hidden="true" /> Customer account
+            </Link>
+            <Link to="/admin/login">
+              <ShieldCheck size={16} aria-hidden="true" /> Admin sign in
+            </Link>
+          </nav>
 
           <form className="am-auth-form am-register-form" onSubmit={handleSubmit}>
             {error && (

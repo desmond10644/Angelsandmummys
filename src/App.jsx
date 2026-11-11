@@ -50,8 +50,6 @@ function AppContent() {
 
       <main className="main-content">
         <Routes>
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
           {/* Main pages */}
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
