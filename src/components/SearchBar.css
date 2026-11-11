@@ -37,7 +37,7 @@
 
 .am-search-submit {
   border: none;
-  background: #c27b91;
+  background: #d20a7a;
   color: #ffffff;
   padding: 11px 18px;
   border-radius: 5px;
@@ -46,7 +46,7 @@
 }
 
 .am-search-submit:hover {
-  background: #a95e77;
+  background: #ad0865;
 }
 
 @media (max-width: 450px) {

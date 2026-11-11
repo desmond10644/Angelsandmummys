@@ -34,7 +34,7 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: #c27b91;
+  background: #d20a7a;
   color: white;
   padding: 5px 10px;
   font-size: 11px;
@@ -58,7 +58,7 @@
 }
 
 .am-wishlist-button:hover {
-  color: #c27b91;
+  color: #d20a7a;
 }
 
 .am-product-info {
@@ -66,7 +66,7 @@
 }
 
 .am-product-category {
-  color: #c27b91;
+  color: #d20a7a;
   font-size: 12px;
   text-transform: uppercase;
 }
@@ -81,7 +81,7 @@
 }
 
 .am-product-name:hover {
-  color: #c27b91;
+  color: #d20a7a;
 }
 
 .am-product-description {
@@ -107,7 +107,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #c27b91;
+  background: #d20a7a;
   color: white;
   border: none;
   border-radius: 5px;
@@ -117,7 +117,7 @@
 }
 
 .am-add-cart:hover {
-  background: #a95e77;
+  background: #ad0865;
 }
 
 @media (max-width: 480px) {

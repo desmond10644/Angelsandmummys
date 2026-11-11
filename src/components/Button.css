@@ -17,22 +17,22 @@
 }
 
 .am-button-primary {
-  background: #c27b91;
+  background: #d20a7a;
   color: #ffffff;
 }
 
 .am-button-primary:hover:not(:disabled) {
-  background: #a95e77;
+  background: #ad0865;
 }
 
 .am-button-outline {
   background: transparent;
-  color: #c27b91;
-  border: 1px solid #c27b91;
+  color: #d20a7a;
+  border: 1px solid #d20a7a;
 }
 
 .am-button-outline:hover:not(:disabled) {
-  background: #c27b91;
+  background: #d20a7a;
   color: #ffffff;
 }
 
