@@ -15,7 +15,9 @@ function Footer() {
       <div className="am-footer-container">
 
         <div className="am-footer-column am-footer-about">
-          <h2>Angels <span>&</span> Mummies</h2>
+          <Link className="am-footer-brand" to="/" aria-label="Angels & Mummy's home">
+            <img src="/logo.jpg" alt="Angels & Mummy's" />
+          </Link>
           <p>
             Discover quality products for mothers, babies and families.
             We make shopping simple, convenient and enjoyable.
@@ -71,7 +73,7 @@ function Footer() {
 
       <div className="am-footer-bottom">
         <p>
-          © {new Date().getFullYear()} Angels & Mummies.
+          © {new Date().getFullYear()} Angels & Mummy's.
           All rights reserved.
         </p>
       </div>
