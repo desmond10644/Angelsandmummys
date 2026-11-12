@@ -40,6 +40,11 @@ export function reorderHeroSlides(ids) {
 
 export function resolveSlideImage(imageUrl) {
   if (/^(https?:|data:|blob:|\/\/)/i.test(imageUrl)) return imageUrl;
-  if (imageUrl.startsWith("/uploads/")) return `${apiBaseUrl}${imageUrl}`;
+  if (
+    imageUrl.startsWith("/uploads/") ||
+    imageUrl.startsWith("/storefront-hero-images/")
+  ) {
+    return `${apiBaseUrl}${imageUrl}`;
+  }
   return imageUrl;
 }
