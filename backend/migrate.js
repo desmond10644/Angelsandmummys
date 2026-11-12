@@ -3,15 +3,18 @@ const path = require("node:path");
 const pool = require("./db");
 
 async function migrate() {
-  const migrationPath = path.join(
-    __dirname,
-    "migrations",
-    "001_initial_schema.sql"
-  );
-  const sql = await fs.readFile(migrationPath, "utf8");
+  const migrationDirectory = path.join(__dirname, "migrations");
+  const migrationFiles = (await fs.readdir(migrationDirectory))
+    .filter((file) => /^\d+_.+\.sql$/.test(file))
+    .sort();
 
-  await pool.query(sql);
-  console.log("Database migration completed.");
+  for (const migrationFile of migrationFiles) {
+    const sql = await fs.readFile(path.join(migrationDirectory, migrationFile), "utf8");
+    await pool.query(sql);
+    console.log(`Applied ${migrationFile}.`);
+  }
+
+  console.log("Database migrations completed.");
 }
 
 migrate()

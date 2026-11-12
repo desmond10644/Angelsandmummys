@@ -1,73 +1,39 @@
+import { apiRequest } from "./api";
+
 const apiBaseUrl = (import.meta.env.VITE_API_URL || "http://localhost:5000")
   .replace(/\/+$/, "");
 
-async function request(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, options);
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.message || `Request failed (${response.status}).`);
-  }
-  if (response.status === 204) return null;
-  return response.json();
-}
-
-function adminHeaders(token) {
-  return { Authorization: `Bearer ${token}` };
-}
-
 export function getPublicHeroSlides() {
-  return request("/api/hero-slides");
+  return apiRequest("/api/hero-slides");
 }
 
-export function getAdminHeroSlides(token) {
-  return request("/api/hero-slides/admin", {
-    headers: adminHeaders(token),
-  });
+export function getAdminHeroSlides() {
+  return apiRequest("/api/hero-slides/admin");
 }
 
-export function adminLogin(email, password) {
-  return request("/api/auth/login", {
+export function createHeroSlide(formData) {
+  return apiRequest("/api/hero-slides/admin", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  }).then((result) => {
-    if (result.user?.role !== "admin") {
-      throw new Error("This account does not have administrator access.");
-    }
-    return result;
-  });
-}
-
-export function createHeroSlide(token, formData) {
-  return request("/api/hero-slides/admin", {
-    method: "POST",
-    headers: adminHeaders(token),
     body: formData,
   });
 }
 
-export function updateHeroSlide(token, id, formData) {
-  return request(`/api/hero-slides/admin/${id}`, {
+export function updateHeroSlide(id, formData) {
+  return apiRequest(`/api/hero-slides/admin/${id}`, {
     method: "PUT",
-    headers: adminHeaders(token),
     body: formData,
   });
 }
 
-export function deleteHeroSlide(token, id) {
-  return request(`/api/hero-slides/admin/${id}`, {
+export function deleteHeroSlide(id) {
+  return apiRequest(`/api/hero-slides/admin/${id}`, {
     method: "DELETE",
-    headers: adminHeaders(token),
   });
 }
 
-export function reorderHeroSlides(token, ids) {
-  return request("/api/hero-slides/admin/order", {
+export function reorderHeroSlides(ids) {
+  return apiRequest("/api/hero-slides/admin/order", {
     method: "PUT",
-    headers: {
-      ...adminHeaders(token),
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ ids }),
   });
 }

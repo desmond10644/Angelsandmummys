@@ -15,33 +15,40 @@ the `.env` file.
    `.env` should set `VITE_API_URL=http://localhost:5000`.
 5. Check `http://localhost:5000/api/health` for the API/database health status.
 
-## Promote an administrator
+## Roles and initial administrator
 
-Register the intended account through the app first, then run this in the Neon
-SQL editor, replacing the email with that account's address:
+Users have one of two roles: `user` or `admin`. Public registration always
+creates a `user`. The role migration promotes an existing `admin@gmail.com`
+account when `npm run db:migrate` is run. For initial setup, register that
+address, then promote it from the `backend` directory:
 
-```sql
-UPDATE users
-SET role = 'admin'
-WHERE email = LOWER('admin@example.com');
+```powershell
+npm run admin:promote -- admin@gmail.com
 ```
 
-Sign out and sign in again after promotion so the new admin role is included in
-the JWT.
+Sign in through the same `/login` page used by regular users. The account role
+determines whether the user is directed to the admin dashboard or storefront.
+An authenticated administrator can create additional admin accounts in the
+dashboard; the API does not allow public registration to assign the admin role.
 
 ## API routes
 
 | Method | Route | Access | Purpose |
 |---|---|---|---|
 | GET | `/api/health` | Public | Check API and database connection |
-| POST | `/api/auth/register` | Public | Create a customer account |
+| POST | `/api/auth/register` | Public | Create a `user` account |
 | POST | `/api/auth/login` | Public | Sign in and receive a JWT |
 | GET | `/api/products` | Public | List active products; accepts `q` and `category` |
+| GET | `/api/products/categories` | Public | List product categories and active product counts |
+| POST | `/api/products/categories` | Admin | Add a product category |
+| PATCH | `/api/products/categories/:category` | Admin | Rename a category across its products |
 | GET | `/api/products/:id` | Public | Get an active product |
-| POST | `/api/products` | Admin | Add inventory |
-| PATCH | `/api/products/:id` | Admin | Update product or stock |
+| POST | `/api/products` | Admin | Add a product with a JPG, PNG, or WebP image upload |
+| PATCH | `/api/products/:id` | Admin | Update product fields or replace its image |
 | DELETE | `/api/products/:id` | Admin | Deactivate a product |
 | GET/PUT | `/api/account/cart` | Signed in | Read or replace the user's cart |
+| GET | `/api/account/admins` | Admin | List administrator accounts |
+| POST | `/api/account/admins` | Admin | Create an administrator account |
 | GET | `/api/account/wishlist` | Signed in | Read the user's wishlist |
 | PUT/DELETE | `/api/account/wishlist/:productId` | Signed in | Add or remove a wishlist item |
 | POST | `/api/orders` | Signed in | Create an unpaid order |
@@ -64,9 +71,19 @@ deployed backend URL.
 ## Homepage hero slides
 
 The hero slider uses the same Express server, PostgreSQL connection, and admin
-accounts as the rest of the application. After promoting an account to admin
-using the SQL above, sign in at `/admin/hero-slides`. The dashboard supports
+accounts as the rest of the application. Sign in at `/login` and open
+`/admin/hero-slides`. The dashboard supports
 image upload, preview, replacement, deletion, slide text and button editing,
 visibility, and ordering. Images must be JPG, PNG, or WebP and no larger than
 8 MB. Uploaded files are served from `/uploads`; configure `UPLOAD_DIR` to a
 persistent directory when deploying.
+
+Product images use the same persistent upload directory and file constraints.
+The product form requires an image when creating a product and allows replacing
+it while editing. Admins can rename a category in the dashboard; the change is
+applied to all products assigned to that category. Admins can also add empty
+categories from the dashboard; category records are migrated from existing
+product data and stay in sync when products are added or recategorized.
+
+The hero images page at `/admin/hero-slides` manages images shown in the
+homepage hero section: add an image, replace an existing image, or delete it.

@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Boxes,
   ClipboardList,
   LogOut,
   Plus,
   RefreshCw,
+  ShieldCheck,
+  Tag,
   UsersRound,
   X,
 } from "lucide-react";
 import { adminRequest } from "../services/adminApi";
+import { useAuth } from "../context/useAuth";
+import { resolveProductImage } from "../services/productService";
 import "./Admin.css";
 
 const emptyProduct = {
@@ -23,20 +27,25 @@ const emptyProduct = {
   image: "",
   stock: "0",
 };
+const emptyAdmin = { fullName: "", email: "", phone: "", password: "" };
 
 const orderStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
 const currency = new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 });
 
 async function fetchWorkspaceData() {
-  const [productData, customerData, orderData] = await Promise.all([
+  const [productData, customerData, orderData, adminData, categoryData] = await Promise.all([
     adminRequest("/api/products"),
     adminRequest("/api/account/customers"),
     adminRequest("/api/orders"),
+    adminRequest("/api/account/admins"),
+    adminRequest("/api/products/categories"),
   ]);
   return {
     products: productData.products || [],
     customers: customerData.customers || [],
     orders: orderData.orders || [],
+    admins: adminData.admins || [],
+    categories: categoryData.categories || [],
   };
 }
 
@@ -52,9 +61,11 @@ function formatDate(value) {
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const { user, token, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState("products");
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -62,7 +73,15 @@ function AdminDashboard() {
   const [productDialog, setProductDialog] = useState(null);
   const [productForm, setProductForm] = useState(emptyProduct);
   const [savingProduct, setSavingProduct] = useState(false);
+  const [productImageFile, setProductImageFile] = useState(null);
+  const [productImagePreview, setProductImagePreview] = useState("");
   const [updatingOrder, setUpdatingOrder] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [categoryDialog, setCategoryDialog] = useState(null);
+  const [savingCategory, setSavingCategory] = useState(false);
+  const [adminDialog, setAdminDialog] = useState(false);
+  const [adminForm, setAdminForm] = useState(emptyAdmin);
+  const [savingAdmin, setSavingAdmin] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -72,11 +91,12 @@ function AdminDashboard() {
       setProducts(data.products);
       setCustomers(data.customers);
       setOrders(data.orders);
+      setAdmins(data.admins);
+      setCategories(data.categories);
     } catch (requestError) {
       if (requestError.status === 401 || requestError.status === 403) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/admin/login", { replace: true });
+        signOut();
+        navigate("/login?next=%2Fadmin", { replace: true });
         return;
       }
       setError(requestError.message);
@@ -86,9 +106,12 @@ function AdminDashboard() {
   };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (!localStorage.getItem("token") || user?.role !== "admin") {
-      navigate("/admin/login", { replace: true });
+    if (!token) {
+      navigate("/login?next=%2Fadmin", { replace: true });
+      return;
+    }
+    if (user?.role !== "admin") {
+      navigate("/", { replace: true });
       return;
     }
 
@@ -99,13 +122,14 @@ function AdminDashboard() {
         setProducts(data.products);
         setCustomers(data.customers);
         setOrders(data.orders);
+        setAdmins(data.admins);
+        setCategories(data.categories);
       })
       .catch((requestError) => {
         if (cancelled) return;
         if (requestError.status === 401 || requestError.status === 403) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          navigate("/admin/login", { replace: true });
+          signOut();
+          navigate("/login?next=%2Fadmin", { replace: true });
           return;
         }
         setError(requestError.message);
@@ -117,11 +141,19 @@ function AdminDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, token, user, signOut]);
+
+  useEffect(() => () => {
+    if (productImagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(productImagePreview);
+    }
+  }, [productImagePreview]);
 
   const openNewProduct = () => {
     setProductDialog({ mode: "create" });
     setProductForm(emptyProduct);
+    setProductImageFile(null);
+    setProductImagePreview("");
     setError("");
   };
 
@@ -138,7 +170,15 @@ function AdminDashboard() {
       image: product.image || "",
       stock: String(product.stock ?? "0"),
     });
+    setProductImageFile(null);
+    setProductImagePreview(resolveProductImage(product.image || ""));
     setError("");
+  };
+
+  const closeProductDialog = () => {
+    setProductDialog(null);
+    setProductImageFile(null);
+    setProductImagePreview("");
   };
 
   const saveProduct = async (event) => {
@@ -160,20 +200,55 @@ function AdminDashboard() {
 
     try {
       const isEdit = productDialog.mode === "edit";
+      const formData = new FormData();
+      Object.entries(payload).forEach(([field, value]) => {
+        if (field === "image" && productImageFile) return;
+        formData.append(field, value == null ? "" : String(value));
+      });
+      if (productImageFile) formData.append("image", productImageFile);
       await adminRequest(
         isEdit ? `/api/products/${productDialog.id}` : "/api/products",
         {
           method: isEdit ? "PATCH" : "POST",
-          body: JSON.stringify(payload),
+          body: formData,
         }
       );
       setProductDialog(null);
+      setProductImageFile(null);
+      setProductImagePreview("");
       setNotice(isEdit ? "Product updated." : "Product added.");
       await loadData();
     } catch (requestError) {
       setError(requestError.message);
     } finally {
       setSavingProduct(false);
+    }
+  };
+
+  const renameCategory = async (event) => {
+    event.preventDefault();
+    setSavingCategory(true);
+    setError("");
+    try {
+      const { category, name } = categoryDialog;
+      const result = category
+        ? await adminRequest(`/api/products/categories/${encodeURIComponent(category)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ name: name.trim() }),
+        })
+        : await adminRequest("/api/products/categories", {
+          method: "POST",
+          body: JSON.stringify({ name: name.trim() }),
+        });
+      setCategoryDialog(null);
+      setNotice(category
+        ? `Category updated across ${result.updatedProducts} products.`
+        : "Category added.");
+      await loadData();
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSavingCategory(false);
     }
   };
 
@@ -208,23 +283,45 @@ function AdminDashboard() {
     }
   };
 
+  const createAdmin = async (event) => {
+    event.preventDefault();
+    setSavingAdmin(true);
+    setError("");
+    try {
+      await adminRequest("/api/account/admins", {
+        method: "POST",
+        body: JSON.stringify(adminForm),
+      });
+      setAdminForm(emptyAdmin);
+      setAdminDialog(false);
+      setNotice("Administrator account created.");
+      await loadData();
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setSavingAdmin(false);
+    }
+  };
+
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/admin/login", { replace: true });
+    signOut();
+    navigate("/login", { replace: true });
   };
 
   const tabs = [
     { id: "products", label: "Products", icon: Boxes, count: products.length },
     { id: "orders", label: "Orders", icon: ClipboardList, count: orders.length },
     { id: "customers", label: "Customers", icon: UsersRound, count: customers.length },
+    { id: "admins", label: "Admins", icon: ShieldCheck, count: admins.length },
+    { id: "categories", label: "Categories", icon: Tag, count: categories.length },
   ];
 
   return (
     <div className="admin-shell">
       <header className="admin-topbar">
-        <a className="admin-wordmark" href="/admin">A&M <span>OPERATIONS</span></a>
+        <Link className="admin-wordmark" to="/admin">A&M <span>OPERATIONS</span></Link>
         <div className="admin-topbar-actions">
+        <Link className="admin-secondary-button" to="/admin/hero-slides">Hero slides</Link>
           <button className="admin-icon-button" type="button" onClick={loadData} title="Refresh data" aria-label="Refresh data">
             <RefreshCw size={17} />
           </button>
@@ -260,16 +357,31 @@ function AdminDashboard() {
           <div className="admin-page-heading">
             <div>
               <p className="admin-eyebrow">ANGELS & MUMMY'S / {activeTab.toUpperCase()}</p>
-              <h1>{activeTab === "products" ? "Product catalog" : activeTab === "orders" ? "Order fulfilment" : "Customers"}</h1>
+              <h1>{activeTab === "products" ? "Product catalog" : activeTab === "orders" ? "Order fulfilment" : activeTab === "admins" ? "Administrator access" : activeTab === "categories" ? "Product categories" : "Customers"}</h1>
               <p className="admin-page-subtitle">
                 {activeTab === "products" && "Manage product details, pricing, images, and available stock."}
                 {activeTab === "orders" && "Review customer orders and keep fulfilment status current."}
-                {activeTab === "customers" && "Customer accounts and their order activity."}
+                {activeTab === "customers" && "User accounts and their order activity."}
+                {activeTab === "admins" && "Manage administrator access for the store."}
+                {activeTab === "categories" && "Rename a category to update every product assigned to it."}
               </p>
             </div>
             {activeTab === "products" && (
               <button className="admin-primary-button admin-add-button" type="button" onClick={openNewProduct}>
                 <Plus size={17} /> Add product
+              </button>
+            )}
+            {activeTab === "admins" && (
+              <button className="admin-primary-button admin-add-button" type="button" onClick={() => {
+                setAdminForm(emptyAdmin);
+                setAdminDialog(true);
+              }}>
+                <Plus size={17} /> Add administrator
+              </button>
+            )}
+            {activeTab === "categories" && (
+              <button className="admin-primary-button admin-add-button" type="button" onClick={() => setCategoryDialog({ category: null, name: "" })}>
+                <Plus size={17} /> Add category
               </button>
             )}
           </div>
@@ -295,7 +407,7 @@ function AdminDashboard() {
                       <tbody>
                         {products.map((product) => (
                           <tr key={product.id}>
-                            <td><div className="admin-product-cell"><img src={product.image || "/placeholder.png"} alt="" /><div><strong>{product.name}</strong><small>#{product.id}{product.badge ? ` · ${product.badge}` : ""}</small></div></div></td>
+                            <td><div className="admin-product-cell"><img src={resolveProductImage(product.image) || "/placeholder.png"} alt="" /><div><strong>{product.name}</strong><small>#{product.id}{product.badge ? ` · ${product.badge}` : ""}</small></div></div></td>
                             <td>{product.category}</td>
                             <td>{currency.format(Number(product.price))}</td>
                             <td><span className={`admin-stock ${Number(product.stock) < 5 ? "is-low" : ""}`}>{product.stock} units</span></td>
@@ -356,6 +468,57 @@ function AdminDashboard() {
                   </div>
                 </section>
               )}
+
+              {activeTab === "admins" && (
+                <section className="admin-table-section" aria-label="Administrator accounts">
+                  <div className="admin-table-meta"><strong>{admins.length} administrators</strong><span>Admin access</span></div>
+                  <div className="admin-table-scroll">
+                    <table className="admin-table admin-customers-table">
+                      <thead><tr><th>Administrator</th><th>Phone</th><th>Joined</th></tr></thead>
+                      <tbody>
+                        {admins.map((admin) => (
+                          <tr key={admin.id}>
+                            <td><div className="admin-customer-cell"><strong>{admin.full_name}</strong><small>{admin.email}</small></div></td>
+                            <td>{admin.phone || "-"}</td>
+                            <td>{formatDate(admin.created_at)}</td>
+                          </tr>
+                        ))}
+                        {admins.length === 0 && <tr><td className="admin-empty-cell" colSpan="3">No administrators found.</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
+
+              {activeTab === "categories" && (
+                <section className="admin-table-section" aria-label="Product categories">
+                  <div className="admin-table-meta"><strong>{categories.length} categories</strong><span>Category changes apply to all assigned products</span></div>
+                  <div className="admin-table-scroll">
+                    <table className="admin-table admin-customers-table">
+                      <thead><tr><th>Category</th><th>Products</th><th><span className="admin-sr-only">Actions</span></th></tr></thead>
+                      <tbody>
+                        {categories.map((category) => (
+                          <tr key={category.category}>
+                            <td><strong>{category.category}</strong></td>
+                            <td>{category.product_count}</td>
+                            <td>
+                              <div className="admin-row-actions">
+                                <button
+                                  type="button"
+                                  onClick={() => setCategoryDialog({ category: category.category, name: category.category })}
+                                >
+                                  Rename
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        {categories.length === 0 && <tr><td className="admin-empty-cell" colSpan="3">No product categories yet. Add a product to create one.</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </>
           )}
         </section>
@@ -363,25 +526,79 @@ function AdminDashboard() {
 
       {productDialog && (
         <div className="admin-dialog-backdrop" role="presentation" onMouseDown={(event) => {
-          if (event.target === event.currentTarget && !savingProduct) setProductDialog(null);
+          if (event.target === event.currentTarget && !savingProduct) closeProductDialog();
         }}>
           <section className="admin-product-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-product-dialog-title">
             <div className="admin-dialog-heading">
               <div><p className="admin-eyebrow">PRODUCT CATALOG</p><h2 id="admin-product-dialog-title">{productDialog.mode === "edit" ? "Edit product" : "Add product"}</h2></div>
-              <button className="admin-icon-button" type="button" aria-label="Close dialog" onClick={() => setProductDialog(null)} disabled={savingProduct}><X size={19} /></button>
+              <button className="admin-icon-button" type="button" aria-label="Close dialog" onClick={closeProductDialog} disabled={savingProduct}><X size={19} /></button>
             </div>
             {error && <div className="admin-alert" role="alert">{error}</div>}
             <form className="admin-product-form" onSubmit={saveProduct}>
               <label className="admin-field-wide">Product name<input value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} required /></label>
-              <label>Category<input value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })} required /></label>
+              <label>Category<input list="admin-product-categories" value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })} maxLength="80" required /><datalist id="admin-product-categories">{categories.map((category) => <option value={category.category} key={category.category} />)}</datalist></label>
               <label>Price (NGN)<input type="number" min="0" step="1" value={productForm.price} onChange={(event) => setProductForm({ ...productForm, price: event.target.value })} required /></label>
               <label>Available stock<input type="number" min="0" step="1" value={productForm.stock} onChange={(event) => setProductForm({ ...productForm, stock: event.target.value })} required /></label>
               <label>Rating<input type="number" min="0" max="5" step="0.1" value={productForm.rating} onChange={(event) => setProductForm({ ...productForm, rating: event.target.value })} /></label>
               <label>Review count<input type="number" min="0" step="1" value={productForm.reviews} onChange={(event) => setProductForm({ ...productForm, reviews: event.target.value })} /></label>
               <label>Badge<input value={productForm.badge} onChange={(event) => setProductForm({ ...productForm, badge: event.target.value })} placeholder="Optional" /></label>
-              <label className="admin-field-wide">Image URL<input type="url" value={productForm.image} onChange={(event) => setProductForm({ ...productForm, image: event.target.value })} required /></label>
+              <label className="admin-field-wide admin-image-upload">
+                Product image{productDialog.mode === "create" ? " (required)" : ""}
+                <input
+                  key={`${productDialog.mode}-${productDialog.id || "new"}`}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  required={productDialog.mode === "create"}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] || null;
+                    setProductImageFile(file);
+                    setProductImagePreview(file ? URL.createObjectURL(file) : productForm.image);
+                  }}
+                />
+                <small>JPG, PNG or WebP · up to 8 MB</small>
+                {productImagePreview && <img className="admin-image-preview" src={productImagePreview.startsWith("/uploads/") ? resolveProductImage(productImagePreview) : productImagePreview} alt="Product preview" />}
+              </label>
               <label className="admin-field-wide">Description<textarea rows="3" value={productForm.description} onChange={(event) => setProductForm({ ...productForm, description: event.target.value })} required /></label>
-              <div className="admin-dialog-actions"><button className="admin-secondary-button" type="button" onClick={() => setProductDialog(null)} disabled={savingProduct}>Cancel</button><button className="admin-primary-button" type="submit" disabled={savingProduct}>{savingProduct ? "Saving..." : productDialog.mode === "edit" ? "Save changes" : "Add product"}</button></div>
+              <div className="admin-dialog-actions"><button className="admin-secondary-button" type="button" onClick={closeProductDialog} disabled={savingProduct}>Cancel</button><button className="admin-primary-button" type="submit" disabled={savingProduct}>{savingProduct ? "Saving..." : productDialog.mode === "edit" ? "Save changes" : "Add product"}</button></div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {adminDialog && (
+        <div className="admin-dialog-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget && !savingAdmin) setAdminDialog(false);
+        }}>
+          <section className="admin-product-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-create-title">
+            <div className="admin-dialog-heading">
+              <div><p className="admin-eyebrow">ADMIN ACCESS</p><h2 id="admin-create-title">Add administrator</h2></div>
+              <button className="admin-icon-button" type="button" aria-label="Close dialog" onClick={() => setAdminDialog(false)} disabled={savingAdmin}><X size={19} /></button>
+            </div>
+            {error && <div className="admin-alert" role="alert">{error}</div>}
+            <form className="admin-product-form" onSubmit={createAdmin}>
+              <label className="admin-field-wide">Full name<input value={adminForm.fullName} onChange={(event) => setAdminForm({ ...adminForm, fullName: event.target.value })} minLength="2" maxLength="120" required /></label>
+              <label className="admin-field-wide">Email address<input type="email" value={adminForm.email} onChange={(event) => setAdminForm({ ...adminForm, email: event.target.value })} required /></label>
+              <label className="admin-field-wide">Phone number<input type="tel" value={adminForm.phone} onChange={(event) => setAdminForm({ ...adminForm, phone: event.target.value })} minLength="6" maxLength="30" required /></label>
+              <label className="admin-field-wide">Temporary password<input type="password" value={adminForm.password} onChange={(event) => setAdminForm({ ...adminForm, password: event.target.value })} minLength="8" maxLength="72" autoComplete="new-password" required /></label>
+              <div className="admin-dialog-actions"><button className="admin-secondary-button" type="button" onClick={() => setAdminDialog(false)} disabled={savingAdmin}>Cancel</button><button className="admin-primary-button" type="submit" disabled={savingAdmin}>{savingAdmin ? "Creating..." : "Create administrator"}</button></div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {categoryDialog && (
+        <div className="admin-dialog-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget && !savingCategory) setCategoryDialog(null);
+        }}>
+          <section className="admin-product-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-category-dialog-title">
+            <div className="admin-dialog-heading">
+              <div><p className="admin-eyebrow">PRODUCT CATEGORIES</p><h2 id="admin-category-dialog-title">{categoryDialog.category ? "Rename category" : "Add category"}</h2></div>
+              <button className="admin-icon-button" type="button" aria-label="Close dialog" onClick={() => setCategoryDialog(null)} disabled={savingCategory}><X size={19} /></button>
+            </div>
+            {error && <div className="admin-alert" role="alert">{error}</div>}
+            <form className="admin-product-form" onSubmit={renameCategory}>
+              <label className="admin-field-wide">Category name<input value={categoryDialog.name} onChange={(event) => setCategoryDialog({ ...categoryDialog, name: event.target.value })} minLength="1" maxLength="80" required autoFocus /></label>
+              <div className="admin-dialog-actions"><button className="admin-secondary-button" type="button" onClick={() => setCategoryDialog(null)} disabled={savingCategory}>Cancel</button><button className="admin-primary-button" type="submit" disabled={savingCategory}>{savingCategory ? "Saving..." : categoryDialog.category ? "Rename category" : "Add category"}</button></div>
             </form>
           </section>
         </div>

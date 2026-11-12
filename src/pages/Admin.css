@@ -667,6 +667,25 @@
   box-shadow: 0 0 0 3px rgba(210, 10, 122, 0.1);
 }
 
+.admin-product-form .admin-image-upload {
+  align-items: start;
+}
+
+.admin-image-upload small {
+  color: var(--admin-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.admin-image-preview {
+  width: 120px;
+  height: 120px;
+  border: 1px solid var(--admin-border);
+  border-radius: 4px;
+  background: var(--admin-canvas);
+  object-fit: cover;
+}
+
 .admin-dialog-actions {
   grid-column: 1 / -1;
   justify-content: flex-end;
@@ -674,6 +693,10 @@
 }
 
 .admin-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   min-height: 39px;
   padding: 0 14px;
   border-radius: 4px;

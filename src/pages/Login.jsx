@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import AdminLogin from "./AdminLogin";
 import "./Auth.css";
 
 function Login() {
@@ -23,9 +22,13 @@ function Login() {
     setLoading(true);
 
     try {
-      await signIn(form.email, form.password);
+      const user = await signIn(form.email, form.password);
       const next = new URLSearchParams(window.location.search).get("next");
-      navigate(next?.startsWith("/") && !next.startsWith("//") ? next : "/", { replace: true });
+      const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "";
+      const destination = user.role === "admin"
+        ? (safeNext || "/admin")
+        : (safeNext.startsWith("/admin") ? "/" : safeNext || "/");
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -124,7 +127,6 @@ function Login() {
           </div>
         </div>
 
-        <AdminLogin embedded />
       </div>
     </section>
   );

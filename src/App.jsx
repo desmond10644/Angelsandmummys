@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import { StoreProvider } from "./context/StoreProvider";
 
@@ -37,7 +37,6 @@ import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import AdminHeroSlides from "./pages/AdminHeroSlides";
 import NotFound from "./pages/NotFound";
-import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 
 import "./App.css";
@@ -77,7 +76,7 @@ function AppContent() {
           <Route path="/settings" element={<Settings />} />
 
           {/* Admin pages */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/login" element={<Navigate to="/login?next=%2Fadmin" replace />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
 

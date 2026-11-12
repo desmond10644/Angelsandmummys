@@ -5,7 +5,11 @@ export async function adminRequest(path, options = {}) {
   const token = localStorage.getItem("token");
 
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  if (options.body && !headers.has("Content-Type")) {
+  if (
+    options.body &&
+    !(options.body instanceof FormData) &&
+    !headers.has("Content-Type")
+  ) {
     headers.set("Content-Type", "application/json");
   }
 

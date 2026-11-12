@@ -19,9 +19,8 @@ cannot be reached or has no published slides.
 
 ## Manage the homepage slider
 
-Register or use an existing account, then promote it to administrator using
-the SQL instructions in [backend/README.md](./backend/README.md). Sign in to
-the dashboard at `/admin/hero-slides`. Admins can upload multiple slides,
+Sign in through the shared `/login` page with an administrator account, then
+open `/admin/hero-slides`. Admins can upload multiple slides,
 preview and replace images, edit headings/descriptions and button links,
 toggle homepage visibility, rearrange slide order, and delete slides.
 
@@ -33,10 +32,17 @@ images must be JPG, PNG, or WebP and no larger than 8 MB. In production, set
 ## Manage products, customers, and orders
 
 Register the intended account through the app first, then from the `backend`
-directory run `npm run admin:promote -- admin@example.com`. Sign in at
-`/admin/login` to manage the product catalog, customer directory, and order
-fulfilment. Public registration always creates a customer account. The SQL
-promotion option is also documented in [backend/README.md](./backend/README.md).
+directory run `npm run admin:promote -- admin@gmail.com` to enable the initial
+administrator account. Existing `admin@gmail.com` accounts are promoted when
+you run `npm run db:migrate`. Sign in at `/login`; administrators are sent to
+the admin dashboard and regular users to the storefront. An administrator can
+create more admin accounts from the dashboard's Admins section. Public
+registration always creates a `user` account.
+
+Admins can add products with an uploaded product image, replace product images,
+edit all product details, and rename categories across the products assigned
+to them. Product images accept JPG, PNG, or WebP files up to 8 MB; use a
+persistent `UPLOAD_DIR` when deploying the backend.
 
 ## Customer shopping and orders
 

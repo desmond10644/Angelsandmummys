@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const pool = require("../db");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
@@ -12,11 +13,44 @@ router.get("/customers", requireAdmin, async (req, res) => {
             MAX(o.created_at) AS last_order_at
      FROM users u
      LEFT JOIN orders o ON o.user_id = u.id
-     WHERE u.role = 'customer'
+     WHERE u.role = 'user'
      GROUP BY u.id
      ORDER BY u.created_at DESC`
   );
   return res.json({ customers: result.rows });
+});
+
+router.get("/admins", requireAdmin, async (_req, res) => {
+  const result = await pool.query(
+    `SELECT id, full_name, email, phone, created_at
+     FROM users WHERE role = 'admin' ORDER BY created_at DESC`
+  );
+  return res.json({ admins: result.rows });
+});
+
+router.post("/admins", requireAdmin, async (req, res) => {
+  const fullName = typeof req.body.fullName === "string" ? req.body.fullName.trim() : "";
+  const email = typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
+  const phone = typeof req.body.phone === "string" ? req.body.phone.trim() : "";
+  const password = typeof req.body.password === "string" ? req.body.password : "";
+
+  if (fullName.length < 2 || fullName.length > 120 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+      phone.length < 6 || phone.length > 30 ||
+      password.length < 8 || password.length > 72) {
+    return res.status(400).json({
+      message: "Provide a valid name, email, phone number, and password (8–72 characters).",
+    });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+  const result = await pool.query(
+    `INSERT INTO users (full_name, email, phone, password_hash, role)
+     VALUES ($1, $2, $3, $4, 'admin')
+     RETURNING id, full_name, email, phone, role, created_at`,
+    [fullName, email, phone, passwordHash]
+  );
+  return res.status(201).json({ admin: result.rows[0] });
 });
 
 router.get("/cart", async (req, res) => {
