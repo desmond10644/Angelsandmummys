@@ -6,6 +6,16 @@ const { requireAuth, requireAdmin } = require("../middleware/auth");
 const router = express.Router();
 router.use(requireAuth);
 
+router.get("/profile", async (req, res) => {
+  const result = await pool.query(
+    `SELECT id, full_name, email, phone, role, created_at
+     FROM users WHERE id = $1`,
+    [req.user.id]
+  );
+  if (!result.rowCount) return res.status(404).json({ message: "Account not found." });
+  return res.json({ user: result.rows[0] });
+});
+
 router.get("/customers", requireAdmin, async (req, res) => {
   const result = await pool.query(
     `SELECT u.id, u.full_name, u.email, u.phone, u.created_at,

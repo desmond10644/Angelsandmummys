@@ -3,11 +3,12 @@ import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X, ShoppingCart, User, Search } from "lucide-react";
 import { useStore } from "../context/useStore";
+import { useAuth } from "../context/useAuth";
 import "./Navbar.css";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const { user } = useAuth();
   const { cart } = useStore();
   const cartCount = cart.reduce(
     (total, item) => total + Number(item.quantity || 1),
@@ -43,8 +44,15 @@ function Navbar() {
             )}
           </Link>
 
-          <Link to="/login" className="am-nav-icon" aria-label="Sign in or create an account">
+          <Link
+            to={user ? "/profile" : "/login"}
+            className={`am-nav-profile ${user ? "is-signed-in" : ""}`}
+            onClick={closeMenu}
+            aria-label={user ? "Open your profile" : "Sign in or create an account"}
+            title={user ? `${user.fullName || user.name || "My profile"}${user.email ? ` · ${user.email}` : ""}` : "Sign in"}
+          >
             <User size={21} />
+            {user && <span>{user.fullName || user.name || "My profile"}</span>}
           </Link>
 
           <button

@@ -66,6 +66,39 @@
   color: #d20a7a;
 }
 
+.am-nav-profile {
+  max-width: 190px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  overflow: hidden;
+  border-radius: 20px;
+  color: #333333;
+  text-decoration: none;
+  transition: color 0.3s, background 0.3s;
+}
+
+.am-nav-profile:hover {
+  color: #d20a7a;
+  background: #fff1f7;
+}
+
+.am-nav-profile svg {
+  flex: 0 0 auto;
+}
+
+.am-nav-profile span {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .am-cart-count {
   position: absolute;
   top: -10px;
@@ -129,5 +162,14 @@
 
   .am-navbar-actions {
     gap: 13px;
+  }
+
+  .am-nav-profile {
+    max-width: 42px;
+    padding: 0 8px;
+  }
+
+  .am-nav-profile span {
+    display: none;
   }
 }

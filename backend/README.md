@@ -38,6 +38,7 @@ dashboard; the API does not allow public registration to assign the admin role.
 | GET | `/api/health` | Public | Check API and database connection |
 | POST | `/api/auth/register` | Public | Create a `user` account |
 | POST | `/api/auth/login` | Public | Sign in and receive a JWT |
+| GET | `/api/account/profile` | Signed in | Read the current user's account details |
 | GET | `/api/products` | Public | List active products; accepts `q` and `category` |
 | GET | `/api/products/categories` | Public | List product categories and active product counts |
 | POST | `/api/products/categories` | Admin | Add a product category |
