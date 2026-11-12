@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "The backend uses Express and PostgreSQL. The Neon connection string and signing\r key belong in `backend/.env`; never put either value in frontend code or commit\r the `.env` file.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -23,6 +23,7 @@
     "pg": "^8.23.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+    "nodemon": "^3.1.11"
+  },
+  "type": "commonjs"
 }
