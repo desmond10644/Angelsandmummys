@@ -26,9 +26,7 @@ function OrderSuccess() {
                 ₦{Number(order.total).toLocaleString("en-NG")}
               </strong>
             </p>
-            <p>
-              Payment Method: <strong>{order.paymentMethod}</strong>
-            </p>
+            <p>Payment status: <strong>{order.payment_status || "unpaid"}</strong></p>
             <p>
               Order Status: <strong>{order.status}</strong>
             </p>

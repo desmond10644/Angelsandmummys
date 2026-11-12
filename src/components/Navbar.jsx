@@ -2,12 +2,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X, ShoppingCart, User, Search } from "lucide-react";
+import { useStore } from "../context/useStore";
 import "./Navbar.css";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const { cart } = useStore();
   const cartCount = cart.reduce(
     (total, item) => total + Number(item.quantity || 1),
     0

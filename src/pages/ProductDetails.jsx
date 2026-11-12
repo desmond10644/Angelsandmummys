@@ -1,26 +1,29 @@
 
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { products } from "../data/products";
 import Rating from "../components/Rating";
 import Button from "../components/Button";
 import Notification from "../components/Notification";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
 import "./ProductsDetails.css";
 
 function ProductDetails() {
   const { id } = useParams();
-
+  const { products, catalogLoading, catalogError, refreshProducts, addToCart } = useStore();
   const product = products.find(
     (item) => String(item.id) === String(id)
   );
 
   const [quantity, setQuantity] = useState(1);
   const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
 
   if (!product) {
     return (
       <main className="am-product-not-found">
-        <h2>Product not found</h2>
+        <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
+        {!catalogLoading && !catalogError && <h2>Product not found</h2>}
         <Link to="/shop">Return to Shop</Link>
       </main>
     );
@@ -33,28 +36,14 @@ function ProductDetails() {
     currency: "NGN"
   }).format(Number(product.price) || 0);
 
-  const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    const existing = cart.find(
-      (item) => String(item.id) === String(product.id)
-    );
-
-    const updatedCart = existing
-      ? cart.map((item) =>
-          String(item.id) === String(product.id)
-            ? {
-                ...item,
-                quantity: Number(item.quantity || 1) + quantity
-              }
-            : item
-        )
-      : [...cart, { ...product, quantity }];
-
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    window.dispatchEvent(new Event("cartUpdated"));
-
-    setNotice("Product added to your cart.");
+  const handleAddToCart = async () => {
+    setError("");
+    try {
+      await addToCart(product, quantity);
+      setNotice("Product added to your cart.");
+    } catch (requestError) {
+      setError(requestError.message);
+    }
   };
 
   return (
@@ -116,13 +105,14 @@ function ProductDetails() {
 
             <button
               onClick={() => setQuantity((current) => current + 1)}
+              disabled={Number(product.stock) > 0 && quantity >= Number(product.stock)}
             >
               +
             </button>
           </div>
 
           <Button
-            onClick={addToCart}
+            onClick={handleAddToCart}
             disabled={
               product.stock !== undefined &&
               Number(product.stock) <= 0
@@ -138,6 +128,7 @@ function ProductDetails() {
               onClose={() => setNotice("")}
             />
           )}
+          {error && <p role="alert">{error}</p>}
         </div>
       </section>
     </main>

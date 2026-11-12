@@ -1,9 +1,11 @@
 
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
 import "./Maternity.css";
 
 function Maternity() {
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
   const maternityProducts = products.filter((product) =>
     /maternity|pregnancy|mother|nursing/i.test(
       `${product.category || ""} ${product.name || ""} ${product.description || ""}`
@@ -26,6 +28,7 @@ function Maternity() {
         <span>{maternityProducts.length} product(s)</span>
       </div>
 
+      <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
       {maternityProducts.length > 0 ? (
         <div className="am-maternity-grid">
           {maternityProducts.map((product) => (

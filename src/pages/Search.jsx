@@ -1,12 +1,14 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
 import "./Search.css";
 
 function Search() {
   const [params] = useSearchParams();
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
   const initialQuery = params.get("q") || "";
   const [search, setSearch] = useState(initialQuery);
 
@@ -20,7 +22,7 @@ function Search() {
         .toLowerCase()
         .includes(term)
     );
-  }, [search]);
+  }, [products, search]);
 
   return (
     <section className="am-search-page">
@@ -37,6 +39,7 @@ function Search() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
       {search.trim() && (
         <p className="am-search-count">
           {results.length} result(s) for "{search}"

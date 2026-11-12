@@ -1,5 +1,7 @@
 
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AuthProvider } from "./context/AuthProvider";
+import { StoreProvider } from "./context/StoreProvider";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -96,10 +98,14 @@ function AppContent() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <AppContent />
-    </BrowserRouter>
+    <AuthProvider>
+      <StoreProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <AppContent />
+        </BrowserRouter>
+      </StoreProvider>
+    </AuthProvider>
   );
 }
 

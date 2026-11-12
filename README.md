@@ -37,3 +37,15 @@ directory run `npm run admin:promote -- admin@example.com`. Sign in at
 `/admin/login` to manage the product catalog, customer directory, and order
 fulfilment. Public registration always creates a customer account. The SQL
 promotion option is also documented in [backend/README.md](./backend/README.md).
+
+## Customer shopping and orders
+
+The storefront reads the catalog from the backend and refreshes it when the
+page regains focus and every 30 seconds. Guest carts and wishlists stay in the
+current browser; signing in syncs them to the customer account. Checkout
+requires an account, and placed orders are saved on the backend and appear in
+both the customer order history and admin dashboard.
+
+Payment is not connected to a provider. Placing an order records it as unpaid;
+it does not charge a customer. The backend verifies stock and calculates the
+final order total when the order is submitted.

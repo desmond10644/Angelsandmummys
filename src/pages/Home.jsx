@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { products } from "../data/products";
-import { categories } from "../data/categories";
 import slideImage1 from "../../images/image1.jpeg";
 import slideImage2 from "../../images/image2.jpeg";
 import slideImage3 from "../../images/image3.jpeg";
 import slideImage4 from "../../images/image4.jpeg";
 import ProductCard from "../components/ProductCard";
 import CategoryCard from "../components/CategoryCard";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
+import { getCatalogCategories } from "../utils/catalog";
 import {
   getPublicHeroSlides,
   resolveSlideImage,
@@ -67,10 +68,11 @@ const fallbackSlides = [
 ];
 
 function Home() {
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
   const [slides, setSlides] = useState(fallbackSlides);
   const [activeSlide, setActiveSlide] = useState(0);
   const featuredProducts = products.slice(0, 8);
-  const popularCategories = categories.slice(0, 4);
+  const popularCategories = getCatalogCategories(products).slice(0, 4);
   const slide = slides[activeSlide] || fallbackSlides[0];
 
   useEffect(() => {
@@ -189,6 +191,7 @@ function Home() {
           <Link to="/categories">View All</Link>
         </div>
 
+        <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
         <div className="am-home-category-grid">
           {popularCategories.map((category) => (
             <CategoryCard key={category.id} category={category} />
@@ -218,6 +221,7 @@ function Home() {
           <Link to="/shop">Shop All</Link>
         </div>
 
+        <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
         <div className="am-home-product-grid">
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />

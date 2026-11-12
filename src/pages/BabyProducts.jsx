@@ -1,9 +1,11 @@
 
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
 import "./BabyProducts.css";
 
 function BabyProducts() {
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
   const babyProducts = products.filter((product) =>
     /baby|newborn|infant|feeding|diaper|nappy|stroller/i.test(
       `${product.category || ""} ${product.name || ""} ${product.description || ""}`
@@ -26,6 +28,7 @@ function BabyProducts() {
         <span>{babyProducts.length} product(s)</span>
       </div>
 
+      <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
       {babyProducts.length > 0 ? (
         <div className="am-baby-grid">
           {babyProducts.map((product) => (

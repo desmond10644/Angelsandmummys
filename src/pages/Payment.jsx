@@ -1,125 +1,98 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { useAuth } from "../context/useAuth";
+import { useStore } from "../context/useStore";
+import { createOrder } from "../services/orderService";
 import "./Payment.css";
 
 function Payment() {
   const navigate = useNavigate();
-
+  const { token } = useAuth();
+  const { cart, cartLoading, clearCart, refreshProducts } = useStore();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const checkoutData = JSON.parse(
     sessionStorage.getItem("checkoutData") || "null"
   );
 
-  const [method, setMethod] = useState("bank-transfer");
-
-  const handlePayment = (e) => {
-    e.preventDefault();
-
-    if (!checkoutData) {
-      alert("Please complete checkout first.");
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!token) {
+      navigate("/login?next=%2Fpayment");
+      return;
+    }
+    if (!checkoutData || !cart.length) {
       navigate("/checkout");
       return;
     }
 
-    // Demo only: this does not charge a customer.
-    const order = {
-      id: `AM-${Date.now()}`,
-      ...checkoutData,
-      paymentMethod: method,
-      paymentStatus: "Pending",
-      status: "Processing",
-      createdAt: new Date().toISOString(),
-    };
-
-    const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-    localStorage.setItem("orders", JSON.stringify([order, ...orders]));
-
-    sessionStorage.setItem("latestOrder", JSON.stringify(order));
-    localStorage.removeItem("cart");
-    sessionStorage.removeItem("checkoutData");
-
-    window.dispatchEvent(new Event("cartUpdated"));
-    navigate("/order-success");
+    setLoading(true);
+    setError("");
+    try {
+      const order = await createOrder({
+        customer: checkoutData.customer,
+        items: cart,
+      });
+      sessionStorage.setItem("latestOrder", JSON.stringify(order));
+      sessionStorage.removeItem("checkoutData");
+      clearCart();
+      refreshProducts();
+      navigate("/order-success", { replace: true });
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!checkoutData) {
     return (
       <section className="am-payment-page">
         <h2>No checkout information found.</h2>
-        <Button onClick={() => navigate("/checkout")}>
-          Return to Checkout
-        </Button>
+        <Button onClick={() => navigate("/checkout")}>Return to Checkout</Button>
       </section>
     );
   }
 
+  if (cartLoading) {
+    return <section className="am-payment-page"><p role="status">Loading your saved cart...</p></section>;
+  }
+
+  if (!token) {
+    return (
+      <section className="am-payment-page">
+        <h2>Sign in to place your order.</h2>
+        <Link to="/login?next=%2Fpayment">Sign in</Link>
+      </section>
+    );
+  }
+
+  const formatPrice = (amount) => `₦${Number(amount).toLocaleString("en-NG")}`;
+
   return (
     <section className="am-payment-page">
       <div className="am-payment-container">
-        <h1>Payment</h1>
-        <p>Choose your preferred payment method.</p>
+        <h1>Review and Place Order</h1>
+        <p>Your order will be saved to your account with payment marked unpaid.</p>
 
         <div className="am-payment-total">
-          <span>Amount to pay</span>
-          <strong>
-            ₦{Number(checkoutData.total).toLocaleString("en-NG")}
-          </strong>
+          <span>Estimated total</span>
+          <strong>{formatPrice(checkoutData.total)}</strong>
         </div>
 
-        <form onSubmit={handlePayment}>
-          <label className="am-payment-option">
-            <input
-              type="radio"
-              name="payment"
-              value="bank-transfer"
-              checked={method === "bank-transfer"}
-              onChange={(e) => setMethod(e.target.value)}
-            />
-            <span>
-              <strong>Bank Transfer</strong>
-              <small>Pay by bank transfer.</small>
-            </span>
-          </label>
+        {error && <p role="alert">{error}</p>}
 
-          <label className="am-payment-option">
-            <input
-              type="radio"
-              name="payment"
-              value="card"
-              checked={method === "card"}
-              onChange={(e) => setMethod(e.target.value)}
-            />
-            <span>
-              <strong>Card Payment</strong>
-              <small>Continue with a secure card payment provider.</small>
-            </span>
-          </label>
-
-          <label className="am-payment-option">
-            <input
-              type="radio"
-              name="payment"
-              value="pay-on-delivery"
-              checked={method === "pay-on-delivery"}
-              onChange={(e) => setMethod(e.target.value)}
-            />
-            <span>
-              <strong>Pay on Delivery</strong>
-              <small>Pay when your order arrives, if available.</small>
-            </span>
-          </label>
-
-          <Button type="submit" block>
-            Confirm Demo Order
+        <form onSubmit={handleSubmit}>
+          <p className="am-payment-warning">
+            No payment provider is connected. Placing this order does not charge
+            you; the server will confirm current prices and stock and record the
+            order as unpaid.
+          </p>
+          <Button type="submit" block disabled={loading}>
+            {loading ? "Placing order..." : "Place Unpaid Order"}
           </Button>
         </form>
-
-        <p className="am-payment-warning">
-          Demonstration only: no real payment is collected. Connect a payment
-          provider and verify its server-side payment confirmation before
-          accepting live orders.
-        </p>
       </div>
     </section>
   );

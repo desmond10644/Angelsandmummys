@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 import "./Auth.css";
 
 function Register() {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -33,33 +35,16 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fullName: form.fullName,
-            email: form.email,
-            phone: form.phone,
-            password: form.password,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed.");
-      }
-
-      navigate("/login");
+      await signUp({
+        fullName: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        password: form.password,
+      });
+      const next = new URLSearchParams(window.location.search).get("next");
+      navigate(next?.startsWith("/") && !next.startsWith("//") ? next : "/");
     } catch (err) {
-      setError(
-        err.message === "Failed to fetch"
-          ? "Unable to connect to the server. Please try again."
-          : err.message
-      );
+      setError(err.message);
     } finally {
       setLoading(false);
     }

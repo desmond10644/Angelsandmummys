@@ -2,16 +2,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { useStore } from "../context/useStore";
+import { useAuth } from "../context/useAuth";
 import "./Checkout.css";
 
 function Checkout() {
   const navigate = useNavigate();
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const { cart, cartLoading } = useStore();
+  const { token, user } = useAuth();
 
   const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
+    fullName: user?.fullName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
     address: "",
     city: "",
     state: "",
@@ -37,6 +40,11 @@ function Checkout() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!token) {
+      navigate("/login?next=%2Fcheckout");
+      return;
+    }
+
     if (cart.length === 0) {
       alert("Your cart is empty.");
       navigate("/shop");
@@ -58,6 +66,20 @@ function Checkout() {
 
     navigate("/payment");
   };
+
+  if (cartLoading) {
+    return <section className="am-checkout-page"><p role="status">Loading your account cart...</p></section>;
+  }
+
+  if (!token) {
+    return (
+      <section className="am-checkout-page">
+        <h1>Sign in to continue</h1>
+        <p>Orders are saved to your customer account.</p>
+        <Button onClick={() => navigate("/login?next=%2Fcheckout")}>Sign in</Button>
+      </section>
+    );
+  }
 
   if (cart.length === 0) {
     return (

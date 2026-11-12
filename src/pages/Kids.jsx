@@ -1,9 +1,11 @@
 
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
 import "./Kids.css";
 
 function Kids() {
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
   const kidsProducts = products.filter((product) =>
     /kid|kids|child|children|toddler|toy|school/i.test(
       `${product.category || ""} ${product.name || ""} ${product.description || ""}`
@@ -26,6 +28,7 @@ function Kids() {
         <span>{kidsProducts.length} product(s)</span>
       </div>
 
+      <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
       {kidsProducts.length > 0 ? (
         <div className="am-kids-grid">
           {kidsProducts.map((product) => (

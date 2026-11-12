@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 import AdminLogin from "./AdminLogin";
 import "./Auth.css";
 
 function Login() {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,36 +23,11 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed.");
-      }
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
-      navigate("/");
+      await signIn(form.email, form.password);
+      const next = new URLSearchParams(window.location.search).get("next");
+      navigate(next?.startsWith("/") && !next.startsWith("//") ? next : "/", { replace: true });
     } catch (err) {
-      setError(
-        err.message === "Failed to fetch"
-          ? "Unable to connect to the server. Please try again."
-          : err.message
-      );
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -141,7 +118,7 @@ function Login() {
             </form>
 
             <p className="am-auth-switch">
-              New to Angels & Mummies? <Link to="/register">Create an account</Link>
+              New to Angels & Mummies? <Link to={`/register${window.location.search}`}>Create an account</Link>
             </p>
             <Link className="am-auth-home-link" to="/">Continue browsing <ArrowRight size={15} /></Link>
           </div>

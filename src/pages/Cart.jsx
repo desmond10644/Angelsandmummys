@@ -1,35 +1,15 @@
 
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CartItem from "../components/CartItem";
 import Button from "../components/Button";
+import { useStore } from "../context/useStore";
+import { useAuth } from "../context/useAuth";
 import "./Cart.css";
 
 function Cart() {
   const navigate = useNavigate();
-  const [cart, setCart] = useState(() =>
-    JSON.parse(localStorage.getItem("cart") || "[]")
-  );
-
-  const saveCart = (updatedCart) => {
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    window.dispatchEvent(new Event("cartUpdated"));
-  };
-
-  const updateQuantity = (id, quantity) => {
-    if (quantity < 1) return;
-
-    saveCart(
-      cart.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const removeItem = (id) => {
-    saveCart(cart.filter((item) => item.id !== id));
-  };
+  const { cart, cartLoading, storeError, updateCartQuantity, removeFromCart } = useStore();
+  const { token } = useAuth();
 
   const subtotal = cart.reduce(
     (total, item) =>
@@ -40,10 +20,18 @@ function Cart() {
   const formatPrice = (price) =>
     `₦${Number(price).toLocaleString("en-NG")}`;
 
+  const changeQuantity = (id, quantity) => updateCartQuantity(id, quantity).catch(() => {});
+  const removeItem = (id) => removeFromCart(id).catch(() => {});
+
+  if (cartLoading) {
+    return <section className="am-cart-page"><p role="status">Loading your saved cart...</p></section>;
+  }
+
   if (cart.length === 0) {
     return (
       <section className="am-cart-page">
         <div className="am-cart-empty">
+          {storeError && <p role="alert">{storeError}</p>}
           <h1>Your Cart Is Empty</h1>
           <p>You haven't added any products to your cart yet.</p>
           <Link to="/shop" className="am-cart-shop-link">
@@ -57,6 +45,8 @@ function Cart() {
   return (
     <section className="am-cart-page">
       <h1>Shopping Cart</h1>
+      {storeError && <p role="alert">{storeError}</p>}
+      {!token && <p>Your cart is saved on this device. Sign in to sync it across devices.</p>}
 
       <div className="am-cart-layout">
         <div className="am-cart-items">
@@ -64,7 +54,7 @@ function Cart() {
             <CartItem
               key={item.id}
               item={item}
-              onQuantityChange={updateQuantity}
+              onQuantityChange={changeQuantity}
               onRemove={removeItem}
             />
           ))}
@@ -90,9 +80,9 @@ function Cart() {
 
           <Button
             block
-            onClick={() => navigate("/checkout")}
+            onClick={() => navigate(token ? "/checkout" : "/login?next=%2Fcheckout")}
           >
-            Proceed to Checkout
+            {token ? "Proceed to Checkout" : "Sign in to Checkout"}
           </Button>
 
           <Link to="/shop" className="am-cart-continue">

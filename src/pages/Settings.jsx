@@ -1,8 +1,12 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 import "./Settings.css";
 
 function Settings() {
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [settings, setSettings] = useState(() => {
     const saved = JSON.parse(localStorage.getItem("accountSettings") || "null");
     return saved || {
@@ -23,9 +27,8 @@ function Settings() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+    signOut();
+    navigate("/login");
   };
 
   return (

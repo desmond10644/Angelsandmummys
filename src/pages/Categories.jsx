@@ -1,9 +1,14 @@
 
-import { categories } from "../data/categories";
+import CatalogStatus from "../components/CatalogStatus";
 import CategoryCard from "../components/CategoryCard";
+import { useStore } from "../context/useStore";
+import { getCatalogCategories } from "../utils/catalog";
 import "./Categories.css";
 
 function Categories() {
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
+  const categories = getCatalogCategories(products);
+
   return (
     <main className="am-categories-page">
       <section className="am-categories-header">
@@ -14,6 +19,7 @@ function Categories() {
         </p>
       </section>
 
+      <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
       {categories.length > 0 ? (
         <div className="am-categories-grid">
           {categories.map((category) => (

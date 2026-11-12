@@ -1,19 +1,19 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import SearchBar from "../components/SearchBar";
 import ProductFilter from "../components/ProductFilter";
+import CatalogStatus from "../components/CatalogStatus";
+import { useStore } from "../context/useStore";
 import "./Shop.css";
 
 function Shop() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { products, catalogLoading, catalogError, refreshProducts } = useStore();
 
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(
-    searchParams.get("category") || "All"
-  );
+  const category = searchParams.get("category") || "All";
   const [sortBy, setSortBy] = useState("newest");
 
   const categoryNames = [
@@ -61,7 +61,7 @@ function Shop() {
     }
 
     return result;
-  }, [search, category, sortBy]);
+  }, [products, search, category, sortBy]);
 
   return (
     <main className="am-shop">
@@ -83,7 +83,12 @@ function Shop() {
         <ProductFilter
           categories={categoryNames}
           selectedCategory={category}
-          onCategoryChange={setCategory}
+          onCategoryChange={(nextCategory) => {
+            const nextParams = new URLSearchParams(searchParams);
+            if (nextCategory === "All") nextParams.delete("category");
+            else nextParams.set("category", nextCategory);
+            setSearchParams(nextParams);
+          }}
           sortBy={sortBy}
           onSortChange={setSortBy}
         />
@@ -94,6 +99,7 @@ function Shop() {
         <span>{filteredProducts.length} product(s) found</span>
       </div>
 
+      <CatalogStatus loading={catalogLoading} error={catalogError} onRetry={refreshProducts} />
       {filteredProducts.length > 0 ? (
         <div className="am-shop-grid">
           {filteredProducts.map((product) => (
@@ -108,7 +114,7 @@ function Shop() {
           <button
             onClick={() => {
               setSearch("");
-              setCategory("All");
+              setSearchParams({});
             }}
           >
             Clear Filters

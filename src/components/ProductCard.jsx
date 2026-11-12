@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useState } from "react";
 import Rating from "./Rating";
+import Notification from "./Notification";
+import { useStore } from "../context/useStore";
 import "./ProductCard.css";
 
 function ProductCard({ product, onAddToCart, onWishlist }) {
   const [added, setAdded] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const { addToCart, toggleWishlist } = useStore();
 
   if (!product) return null;
 
@@ -31,27 +35,22 @@ function ProductCard({ product, onAddToCart, onWishlist }) {
       currency: "NGN"
     }).format(Number(amount) || 0);
 
-  const handleAddToCart = () => {
-    if (onAddToCart) {
-      onAddToCart(product);
-    } else {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const existing = cart.find((item) => item.id === id);
-
-      const updatedCart = existing
-        ? cart.map((item) =>
-            item.id === id
-              ? { ...item, quantity: Number(item.quantity || 1) + 1 }
-              : item
-          )
-        : [...cart, { ...product, quantity: 1 }];
-
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      window.dispatchEvent(new Event("cartUpdated"));
+  const handleAddToCart = async () => {
+    try {
+      await (onAddToCart ? onAddToCart(product) : addToCart(product));
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1500);
+    } catch (error) {
+      setActionError(error.message);
     }
+  };
 
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+  const handleWishlist = async () => {
+    try {
+      await (onWishlist ? onWishlist(product) : toggleWishlist(product));
+    } catch (error) {
+      setActionError(error.message);
+    }
   };
 
   return (
@@ -66,7 +65,7 @@ function ProductCard({ product, onAddToCart, onWishlist }) {
         <button
           className="am-wishlist-button"
           aria-label="Add to wishlist"
-          onClick={() => onWishlist && onWishlist(product)}
+          onClick={handleWishlist}
         >
           <Heart size={19} />
         </button>
@@ -100,6 +99,13 @@ function ProductCard({ product, onAddToCart, onWishlist }) {
           </button>
         </div>
       </div>
+      {actionError && (
+        <Notification
+          message={actionError}
+          type="error"
+          onClose={() => setActionError("")}
+        />
+      )}
     </article>
   );
 }
