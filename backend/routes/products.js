@@ -129,6 +129,7 @@ const productFields = {
   price: "price",
   rating: "rating",
   reviews: "reviews",
+  delivery_price: "delivery_price",
   badge: "badge",
   description: "description",
   image: "image",
@@ -140,7 +141,7 @@ function validProduct(body, partial = false) {
   if (!partial && required.some((field) => body[field] === undefined)) return false;
   if (body.name !== undefined && (typeof body.name !== "string" || !body.name.trim())) return false;
   if (body.category !== undefined && (typeof body.category !== "string" || !body.category.trim() || body.category.trim().length > 80)) return false;
-  for (const field of ["price", "stock", "reviews"]) {
+  for (const field of ["price", "delivery_price", "stock", "reviews"]) {
     if (body[field] !== undefined && (!Number.isInteger(Number(body[field])) || Number(body[field]) < 0)) return false;
   }
   if (body.rating !== undefined && (!Number.isFinite(Number(body.rating)) || Number(body.rating) < 0 || Number(body.rating) > 5)) return false;
@@ -164,7 +165,7 @@ router.get("/", async (req, res) => {
   }
 
   const result = await pool.query(
-    `SELECT id, name, category, price, rating, reviews, badge, description, image, stock
+    `SELECT id, name, category, price, delivery_price, rating, reviews, badge, description, image, stock
      FROM products WHERE ${conditions.join(" AND ")} ORDER BY id`,
     values
   );
@@ -313,7 +314,7 @@ router.patch("/categories/:category", requireAuth, requireAdmin, categoryUpload.
 
 router.get("/:id", async (req, res) => {
   const result = await pool.query(
-    `SELECT id, name, category, price, rating, reviews, badge, description, image, stock
+    `SELECT id, name, category, price, delivery_price, rating, reviews, badge, description, image, stock
      FROM products WHERE id = $1 AND active = TRUE`,
     [req.params.id]
   );
@@ -329,6 +330,9 @@ router.post("/", requireAuth, requireAdmin, upload.single("image"), async (req, 
   try {
     const imageName = await validateImage(req.file);
     const productBody = { ...req.body, image: `/uploads/products/${imageName}` };
+    if (productBody.delivery_price === undefined || productBody.delivery_price === "") {
+      productBody.delivery_price = 0;
+    }
     if (!validProduct(productBody)) {
       await removeTemporaryUpload(req.file);
       return res.status(400).json({ message: "Product fields are missing or invalid." });
@@ -343,7 +347,7 @@ router.post("/", requireAuth, requireAdmin, upload.single("image"), async (req, 
     const result = await pool.query(
       `INSERT INTO products (${fields.join(", ")})
        VALUES (${fields.map((_, index) => `$${index + 1}`).join(", ")})
-       RETURNING id, name, category, price, rating, reviews, badge, description, image, stock`,
+       RETURNING id, name, category, price, delivery_price, rating, reviews, badge, description, image, stock`,
       values
     );
     return res.status(201).json({ product: result.rows[0] });
@@ -392,7 +396,7 @@ router.patch("/:id", requireAuth, requireAdmin, upload.single("image"), async (r
     const result = await pool.query(
       `UPDATE products SET ${assignments.join(", ")}, updated_at = NOW()
        WHERE id = $${values.length} AND active = TRUE
-       RETURNING id, name, category, price, rating, reviews, badge, description, image, stock`,
+       RETURNING id, name, category, price, delivery_price, rating, reviews, badge, description, image, stock`,
       values
     );
     if (!result.rowCount) {

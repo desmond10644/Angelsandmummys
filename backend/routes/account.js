@@ -65,7 +65,7 @@ router.post("/admins", requireAdmin, async (req, res) => {
 
 router.get("/cart", async (req, res) => {
   const result = await pool.query(
-    `SELECT p.id, p.name, p.category, p.price, p.image, p.stock, c.quantity
+    `SELECT p.id, p.name, p.category, p.price, p.delivery_price, p.image, p.stock, c.quantity
      FROM cart_items c JOIN products p ON p.id = c.product_id
      WHERE c.user_id = $1 AND p.active = TRUE ORDER BY p.id`,
     [req.user.id]

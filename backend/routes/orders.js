@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
     await client.query("BEGIN");
     const ids = [...quantities.keys()];
     const productResult = await client.query(
-      `SELECT id, name, price, stock FROM products
+      `SELECT id, name, price, delivery_price, stock FROM products
        WHERE id = ANY($1::int[]) AND active = TRUE FOR UPDATE`,
       [ids]
     );
@@ -49,7 +49,11 @@ router.post("/", async (req, res) => {
       (sum, [productId, quantity]) => sum + Number(products.get(productId).price) * quantity,
       0
     );
-    const deliveryFee = 3000;
+    const deliveryFee = [...quantities].reduce(
+      (sum, [productId, quantity]) =>
+        sum + Number(products.get(productId).delivery_price) * quantity,
+      0
+    );
     const orderResult = await client.query(
       `INSERT INTO orders
        (user_id, full_name, email, phone, address, city, state, delivery_note,
@@ -76,9 +80,10 @@ router.post("/", async (req, res) => {
     for (const [productId, quantity] of quantities) {
       const product = products.get(productId);
       await client.query(
-        `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [order.id, productId, product.name, product.price, quantity]
+        `INSERT INTO order_items
+         (order_id, product_id, product_name, unit_price, delivery_price, quantity)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [order.id, productId, product.name, product.price, product.delivery_price, quantity]
       );
       await client.query(
         "UPDATE products SET stock = stock - $1, updated_at = NOW() WHERE id = $2",
@@ -92,6 +97,7 @@ router.post("/", async (req, res) => {
       productId,
       name: products.get(productId).name,
       price: Number(products.get(productId).price),
+      delivery_price: Number(products.get(productId).delivery_price),
       quantity,
     }));
     return res.status(201).json({
@@ -115,6 +121,7 @@ router.get("/", async (req, res) => {
               'productId', oi.product_id,
               'name', oi.product_name,
               'price', oi.unit_price,
+              'delivery_price', oi.delivery_price,
               'quantity', oi.quantity
             )) FILTER (WHERE oi.id IS NOT NULL), '[]'::json) AS items
      FROM orders o
@@ -128,7 +135,11 @@ router.get("/", async (req, res) => {
     orders: result.rows.map((order) => ({
       ...order,
       id: `AM-${order.id}`,
-      items: order.items.map((item) => ({ ...item, price: Number(item.price) })),
+      items: order.items.map((item) => ({
+        ...item,
+        price: Number(item.price),
+        delivery_price: Number(item.delivery_price),
+      })),
     })),
   });
 });

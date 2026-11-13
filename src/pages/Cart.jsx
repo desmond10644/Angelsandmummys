@@ -16,6 +16,11 @@ function Cart() {
       total + Number(item.price || 0) * Number(item.quantity || 1),
     0
   );
+  const deliveryFee = cart.reduce(
+    (total, item) =>
+      total + Number(item.delivery_price || 0) * Number(item.quantity || 1),
+    0
+  );
 
   const formatPrice = (price) =>
     `₦${Number(price).toLocaleString("en-NG")}`;
@@ -70,12 +75,12 @@ function Cart() {
 
           <div className="am-cart-summary-row">
             <span>Delivery</span>
-            <span>Calculated at checkout</span>
+            <strong>{formatPrice(deliveryFee)}</strong>
           </div>
 
           <div className="am-cart-total">
             <span>Total</span>
-            <strong>{formatPrice(subtotal)}</strong>
+            <strong>{formatPrice(subtotal + deliveryFee)}</strong>
           </div>
 
           <Button

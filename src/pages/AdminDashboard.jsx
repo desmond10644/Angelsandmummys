@@ -21,6 +21,7 @@ const emptyProduct = {
   name: "",
   category: "",
   price: "",
+  delivery_price: "0",
   rating: "0",
   reviews: "0",
   badge: "",
@@ -164,6 +165,7 @@ function AdminDashboard() {
       name: product.name || "",
       category: product.category || "",
       price: String(product.price ?? ""),
+      delivery_price: String(product.delivery_price ?? "0"),
       rating: String(product.rating ?? "0"),
       reviews: String(product.reviews ?? "0"),
       badge: product.badge || "",
@@ -191,6 +193,7 @@ function AdminDashboard() {
       name: productForm.name.trim(),
       category: productForm.category.trim(),
       price: Number(productForm.price),
+      delivery_price: Number(productForm.delivery_price),
       rating: Number(productForm.rating),
       reviews: Number(productForm.reviews),
       badge: productForm.badge.trim() || null,
@@ -409,19 +412,20 @@ function AdminDashboard() {
                   <div className="admin-table-meta"><strong>{products.length} active products</strong><span>Prices in NGN</span></div>
                   <div className="admin-table-scroll">
                     <table className="admin-table admin-products-table">
-                      <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Rating</th><th><span className="admin-sr-only">Actions</span></th></tr></thead>
+                      <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Delivery / unit</th><th>Stock</th><th>Rating</th><th><span className="admin-sr-only">Actions</span></th></tr></thead>
                       <tbody>
                         {products.map((product) => (
                           <tr key={product.id}>
                             <td><div className="admin-product-cell"><img src={resolveProductImage(product.image) || "/placeholder.png"} alt="" /><div><strong>{product.name}</strong><small>#{product.id}{product.badge ? ` · ${product.badge}` : ""}</small></div></div></td>
                             <td>{product.category}</td>
                             <td>{currency.format(Number(product.price))}</td>
+                            <td>{currency.format(Number(product.delivery_price || 0))}</td>
                             <td><span className={`admin-stock ${Number(product.stock) < 5 ? "is-low" : ""}`}>{product.stock} units</span></td>
                             <td>{Number(product.rating || 0).toFixed(1)} <span className="admin-muted">({product.reviews || 0})</span></td>
                             <td><div className="admin-row-actions"><button type="button" onClick={() => openEditProduct(product)}>Edit</button><button className="is-danger" type="button" onClick={() => deleteProduct(product)}>Delete</button></div></td>
                           </tr>
                         ))}
-                        {products.length === 0 && <tr><td className="admin-empty-cell" colSpan="6">No active products in the catalog.</td></tr>}
+                        {products.length === 0 && <tr><td className="admin-empty-cell" colSpan="7">No active products in the catalog.</td></tr>}
                       </tbody>
                     </table>
                   </div>
@@ -556,6 +560,7 @@ function AdminDashboard() {
               <label className="admin-field-wide">Product name<input value={productForm.name} onChange={(event) => setProductForm({ ...productForm, name: event.target.value })} required /></label>
               <label>Category<input list="admin-product-categories" value={productForm.category} onChange={(event) => setProductForm({ ...productForm, category: event.target.value })} maxLength="80" required /><datalist id="admin-product-categories">{categories.map((category) => <option value={category.category} key={category.category} />)}</datalist></label>
               <label>Price (NGN)<input type="number" min="0" step="1" value={productForm.price} onChange={(event) => setProductForm({ ...productForm, price: event.target.value })} required /></label>
+              <label>Delivery price per unit (NGN)<input type="number" min="0" step="1" value={productForm.delivery_price} onChange={(event) => setProductForm({ ...productForm, delivery_price: event.target.value })} required /></label>
               <label>Available stock<input type="number" min="0" step="1" value={productForm.stock} onChange={(event) => setProductForm({ ...productForm, stock: event.target.value })} required /></label>
               <label>Rating<input type="number" min="0" max="5" step="0.1" value={productForm.rating} onChange={(event) => setProductForm({ ...productForm, rating: event.target.value })} /></label>
               <label>Review count<input type="number" min="0" step="1" value={productForm.reviews} onChange={(event) => setProductForm({ ...productForm, reviews: event.target.value })} /></label>

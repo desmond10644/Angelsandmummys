@@ -61,8 +61,9 @@ dashboard; the API does not allow public registration to assign the admin role.
 | PUT | `/api/hero-slides/admin/order` | Admin | Save homepage slide order |
 
 Orders are recorded as unpaid; these endpoints do not collect or verify
-payments. The server calculates totals from database prices and currently adds
-a ₦3,000 delivery fee.
+payments. The server calculates totals from database prices and each product's
+delivery price multiplied by its quantity. Configure delivery prices when
+adding or editing products; existing products default to free delivery.
 
 For hosting, configure the same backend variables in the hosting provider's
 environment-variable settings, and set `FRONTEND_URL` to the deployed

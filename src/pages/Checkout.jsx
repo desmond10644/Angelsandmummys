@@ -27,7 +27,11 @@ function Checkout() {
     0
   );
 
-  const deliveryFee = cart.length > 0 ? 3000 : 0;
+  const deliveryFee = cart.reduce(
+    (total, item) =>
+      total + Number(item.delivery_price || 0) * Number(item.quantity || 1),
+    0
+  );
   const total = subtotal + deliveryFee;
 
   const formatPrice = (price) =>
