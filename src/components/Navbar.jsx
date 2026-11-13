@@ -10,6 +10,7 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
   const { cart } = useStore();
+  const profilePath = user?.role === "admin" ? "/admin" : user ? "/profile" : "/login";
   const cartCount = cart.reduce(
     (total, item) => total + Number(item.quantity || 1),
     0
@@ -45,11 +46,11 @@ function Navbar() {
           </Link>
 
           <Link
-            to={user ? "/profile" : "/login"}
+            to={profilePath}
             className={`am-nav-profile ${user ? "is-signed-in" : ""}`}
             onClick={closeMenu}
-            aria-label={user ? "Open your profile" : "Sign in or create an account"}
-            title={user ? `${user.fullName || user.name || "My profile"}${user.email ? ` · ${user.email}` : ""}` : "Sign in"}
+            aria-label={user?.role === "admin" ? "Open admin dashboard" : user ? "Open your profile" : "Sign in or create an account"}
+            title={user?.role === "admin" ? "Admin dashboard" : user ? `${user.fullName || user.name || "My profile"}${user.email ? ` · ${user.email}` : ""}` : "Sign in"}
           >
             <User size={21} />
             {user && <span>{user.fullName || user.name || "My profile"}</span>}

@@ -40,9 +40,9 @@ dashboard; the API does not allow public registration to assign the admin role.
 | POST | `/api/auth/login` | Public | Sign in and receive a JWT |
 | GET | `/api/account/profile` | Signed in | Read the current user's account details |
 | GET | `/api/products` | Public | List active products; accepts `q` and `category` |
-| GET | `/api/products/categories` | Public | List product categories and active product counts |
-| POST | `/api/products/categories` | Admin | Add a product category |
-| PATCH | `/api/products/categories/:category` | Admin | Rename a category across its products |
+| GET | `/api/products/categories` | Public | List categories, images, and active product counts |
+| POST | `/api/products/categories` | Admin | Add a category and optional image |
+| PATCH | `/api/products/categories/:category` | Admin | Rename a category or replace its image |
 | GET | `/api/products/:id` | Public | Get an active product |
 | POST | `/api/products` | Admin | Add a product with a JPG, PNG, or WebP image upload |
 | PATCH | `/api/products/:id` | Admin | Update product fields or replace its image |
@@ -81,10 +81,11 @@ persistent directory when deploying.
 
 Product images use the same persistent upload directory and file constraints.
 The product form requires an image when creating a product and allows replacing
-it while editing. Admins can rename a category in the dashboard; the change is
-applied to all products assigned to that category. Admins can also add empty
-categories from the dashboard; category records are migrated from existing
-product data and stay in sync when products are added or recategorized.
+it while editing. Admins can rename categories and add or replace category
+images in the dashboard. A category image appears as the banner on that
+category's shop page. Category image uploads must be JPG, PNG, or WebP and no
+larger than 8 MB. Category records are migrated from existing product data and
+stay in sync when products are added or recategorized.
 
 The hero images page at `/admin/hero-slides` manages images shown in the
 homepage hero section: add an image, replace an existing image, or delete it.

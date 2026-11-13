@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Boxes,
   ClipboardList,
+  ImagePlus,
   LogOut,
   Plus,
   RefreshCw,
@@ -230,19 +231,24 @@ function AdminDashboard() {
     setSavingCategory(true);
     setError("");
     try {
-      const { category, name } = categoryDialog;
+      const { category, name, image } = categoryDialog;
+      const formData = new FormData();
+      formData.append("name", name.trim());
+      if (image) formData.append("image", image);
       const result = category
         ? await adminRequest(`/api/products/categories/${encodeURIComponent(category)}`, {
           method: "PATCH",
-          body: JSON.stringify({ name: name.trim() }),
+          body: formData,
         })
         : await adminRequest("/api/products/categories", {
           method: "POST",
-          body: JSON.stringify({ name: name.trim() }),
+          body: formData,
         });
       setCategoryDialog(null);
       setNotice(category
-        ? `Category updated across ${result.updatedProducts} products.`
+        ? name.trim() === category
+          ? "Category image updated."
+          : `Category updated across ${result.updatedProducts} products.`
         : "Category added.");
       await loadData();
     } catch (requestError) {
@@ -363,7 +369,7 @@ function AdminDashboard() {
                 {activeTab === "orders" && "Review customer orders and keep fulfilment status current."}
                 {activeTab === "customers" && "User accounts and their order activity."}
                 {activeTab === "admins" && "Manage administrator access for the store."}
-                {activeTab === "categories" && "Rename a category to update every product assigned to it."}
+                {activeTab === "categories" && "Edit category names and the images used on category pages."}
               </p>
             </div>
             {activeTab === "products" && (
@@ -380,7 +386,7 @@ function AdminDashboard() {
               </button>
             )}
             {activeTab === "categories" && (
-              <button className="admin-primary-button admin-add-button" type="button" onClick={() => setCategoryDialog({ category: null, name: "" })}>
+              <button className="admin-primary-button admin-add-button" type="button" onClick={() => setCategoryDialog({ category: null, name: "", image_url: "", image: null })}>
                 <Plus size={17} /> Add category
               </button>
             )}
@@ -495,25 +501,37 @@ function AdminDashboard() {
                   <div className="admin-table-meta"><strong>{categories.length} categories</strong><span>Category changes apply to all assigned products</span></div>
                   <div className="admin-table-scroll">
                     <table className="admin-table admin-customers-table">
-                      <thead><tr><th>Category</th><th>Products</th><th><span className="admin-sr-only">Actions</span></th></tr></thead>
+                      <thead><tr><th>Image</th><th>Category</th><th>Products</th><th><span className="admin-sr-only">Actions</span></th></tr></thead>
                       <tbody>
                         {categories.map((category) => (
                           <tr key={category.category}>
+                            <td>
+                              {category.image_url ? (
+                                <img className="admin-category-image" src={resolveProductImage(category.image_url)} alt="" />
+                              ) : (
+                                <span className="admin-category-no-image">No image</span>
+                              )}
+                            </td>
                             <td><strong>{category.category}</strong></td>
                             <td>{category.product_count}</td>
                             <td>
                               <div className="admin-row-actions">
                                 <button
                                   type="button"
-                                  onClick={() => setCategoryDialog({ category: category.category, name: category.category })}
+                                  onClick={() => setCategoryDialog({
+                                    category: category.category,
+                                    name: category.category,
+                                    image_url: category.image_url || "",
+                                    image: null,
+                                  })}
                                 >
-                                  Rename
+                                  Edit
                                 </button>
                               </div>
                             </td>
                           </tr>
                         ))}
-                        {categories.length === 0 && <tr><td className="admin-empty-cell" colSpan="3">No product categories yet. Add a product to create one.</td></tr>}
+                        {categories.length === 0 && <tr><td className="admin-empty-cell" colSpan="4">No product categories yet. Add a product to create one.</td></tr>}
                       </tbody>
                     </table>
                   </div>
@@ -592,13 +610,20 @@ function AdminDashboard() {
         }}>
           <section className="admin-product-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-category-dialog-title">
             <div className="admin-dialog-heading">
-              <div><p className="admin-eyebrow">PRODUCT CATEGORIES</p><h2 id="admin-category-dialog-title">{categoryDialog.category ? "Rename category" : "Add category"}</h2></div>
+              <div><p className="admin-eyebrow">PRODUCT CATEGORIES</p><h2 id="admin-category-dialog-title">{categoryDialog.category ? "Edit category" : "Add category"}</h2></div>
               <button className="admin-icon-button" type="button" aria-label="Close dialog" onClick={() => setCategoryDialog(null)} disabled={savingCategory}><X size={19} /></button>
             </div>
             {error && <div className="admin-alert" role="alert">{error}</div>}
             <form className="admin-product-form" onSubmit={renameCategory}>
               <label className="admin-field-wide">Category name<input value={categoryDialog.name} onChange={(event) => setCategoryDialog({ ...categoryDialog, name: event.target.value })} minLength="1" maxLength="80" required autoFocus /></label>
-              <div className="admin-dialog-actions"><button className="admin-secondary-button" type="button" onClick={() => setCategoryDialog(null)} disabled={savingCategory}>Cancel</button><button className="admin-primary-button" type="submit" disabled={savingCategory}>{savingCategory ? "Saving..." : categoryDialog.category ? "Rename category" : "Add category"}</button></div>
+              {categoryDialog.image_url && !categoryDialog.image && (
+                <div className="admin-category-image-preview"><img src={resolveProductImage(categoryDialog.image_url)} alt="" /><span>Current category image</span></div>
+              )}
+              <label className="admin-field-wide">Category image (JPG, PNG, or WebP, max 8 MB)
+                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setCategoryDialog({ ...categoryDialog, image: event.target.files?.[0] || null })} />
+              </label>
+              {categoryDialog.image && <p className="admin-category-file-name"><ImagePlus size={15} /> {categoryDialog.image.name}</p>}
+              <div className="admin-dialog-actions"><button className="admin-secondary-button" type="button" onClick={() => setCategoryDialog(null)} disabled={savingCategory}>Cancel</button><button className="admin-primary-button" type="submit" disabled={savingCategory || (categoryDialog.category === categoryDialog.name.trim() && !categoryDialog.image)}>{savingCategory ? "Saving..." : categoryDialog.category ? "Save category" : "Add category"}</button></div>
             </form>
           </section>
         </div>

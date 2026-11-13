@@ -1,10 +1,12 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import SearchBar from "../components/SearchBar";
 import ProductFilter from "../components/ProductFilter";
 import CatalogStatus from "../components/CatalogStatus";
+import { getCategories } from "../services/categoryService";
+import { localImages } from "../data/localImages";
 import { useStore } from "../context/useStore";
 import "./Shop.css";
 
@@ -15,6 +17,30 @@ function Shop() {
   const [search, setSearch] = useState("");
   const category = searchParams.get("category") || "All";
   const [sortBy, setSortBy] = useState("newest");
+  const [categories, setCategories] = useState([]);
+  const [categoriesError, setCategoriesError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    getCategories()
+      .then((items) => {
+        if (active) setCategories(items);
+      })
+      .catch((error) => {
+        if (active) setCategoriesError(error.message);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const selectedCategory = categories.find(
+    (item) => item.name.toLowerCase() === category.toLowerCase()
+  );
+  const bannerStyle = {
+    "--am-shop-hero-image": `url("${selectedCategory?.image || localImages.storefront}")`,
+  };
 
   const categoryNames = [
     ...new Set(products.map((product) => product.category).filter(Boolean))
@@ -65,14 +91,19 @@ function Shop() {
 
   return (
     <main className="am-shop">
-      <section className="am-shop-banner">
-        <span>OUR COLLECTION</span>
-        <h1>Shop All Products</h1>
-        <p>
-          Explore essentials selected for mothers, babies and kids.
-        </p>
+      <section className="am-shop-banner" style={bannerStyle}>
+        <div>
+          <span>{category === "All" ? "OUR COLLECTION" : "SHOP BY CATEGORY"}</span>
+          <h1>{category === "All" ? "Shop All Products" : category}</h1>
+          <p>
+            {selectedCategory?.description || "Explore essentials selected for mothers, babies and kids."}
+          </p>
+        </div>
       </section>
 
+      {categoriesError && category !== "All" && (
+        <p className="am-shop-category-error" role="status">{categoriesError}</p>
+      )}
       <div className="am-shop-toolbar">
         <SearchBar
           value={search}

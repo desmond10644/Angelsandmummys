@@ -43,6 +43,10 @@ function Profile() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (sessionUser?.role === "admin") {
+      navigate("/admin", { replace: true });
+      return undefined;
+    }
     if (!token) {
       return undefined;
     }
@@ -67,7 +71,7 @@ function Profile() {
     return () => {
       active = false;
     };
-  }, [token, signOut]);
+  }, [token, sessionUser, signOut, navigate]);
 
   const handleSignOut = () => {
     signOut();
@@ -86,6 +90,14 @@ function Profile() {
             Sign in <ArrowRight size={17} />
           </Link>
         </section>
+      </main>
+    );
+  }
+
+  if (sessionUser?.role === "admin") {
+    return (
+      <main className="am-profile-page">
+        <div className="am-profile-loading" role="status">Opening administrator dashboard...</div>
       </main>
     );
   }

@@ -8,7 +8,6 @@ function CategoryCard({ category }) {
   const {
     name,
     image,
-    image_url,
     description,
     product_count
   } = category;
@@ -20,7 +19,7 @@ function CategoryCard({ category }) {
     >
       <div className="am-category-image">
         <img
-          src={image || image_url || "/placeholder.png"}
+          src={image || "/placeholder.png"}
           alt={name}
         />
       </div>

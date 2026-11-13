@@ -7,27 +7,41 @@
 }
 
 .am-shop-banner {
-  background: #fbf1f4;
-  padding: 45px 30px;
+  min-height: 165px;
+  padding: 24px 36px;
+  display: flex;
+  align-items: center;
   border-radius: 12px;
-  text-align: center;
   margin-bottom: 30px;
+  background:
+    linear-gradient(90deg, rgba(47, 29, 38, 0.78), rgba(47, 29, 38, 0.18)),
+    var(--am-shop-hero-image) center 45% / cover,
+    #fbf1f4;
+  color: #fff;
+  text-align: left;
 }
 
 .am-shop-banner span {
-  color: #ad0865;
+  color: #ffe3f1;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.5px;
 }
 
 .am-shop-banner h1 {
+  color: #fff;
   font-size: 38px;
   margin: 10px 0;
 }
 
 .am-shop-banner p {
-  color: #766d70;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.am-shop-category-error {
+  color: #756a6f;
+  font-size: 12px;
 }
 
 .am-shop-toolbar {
@@ -95,5 +109,10 @@
 
   .am-shop-banner h1 {
     font-size: 30px;
+  }
+
+  .am-shop-banner {
+    min-height: 145px;
+    padding: 22px;
   }
 }

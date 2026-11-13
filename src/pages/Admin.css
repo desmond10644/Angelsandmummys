@@ -54,6 +54,44 @@
 .admin-table tbody tr:nth-child(4) { animation-delay: 105ms; }
 .admin-table tbody tr:nth-child(5) { animation-delay: 140ms; }
 
+.admin-category-image {
+  width: 52px;
+  height: 38px;
+  display: block;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.admin-category-no-image {
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+
+.admin-category-image-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
+.admin-category-image-preview img {
+  width: 76px;
+  height: 54px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.admin-category-file-name {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: -4px 0 0;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
 .admin-dialog-backdrop {
   animation: admin-fade-in 180ms ease both;
 }

@@ -13,6 +13,7 @@ const uploadDirectory = path.resolve(
   process.env.UPLOAD_DIR || path.join(__dirname, "..", "uploads")
 );
 const imageDirectory = path.join(uploadDirectory, "products");
+const categoryImageDirectory = path.join(uploadDirectory, "categories");
 const maxImageSize = 8 * 1024 * 1024;
 const allowedTypes = new Map([
   ["image/jpeg", { extension: ".jpg", signature: [0xff, 0xd8, 0xff] }],
@@ -21,10 +22,29 @@ const allowedTypes = new Map([
 ]);
 
 mkdirSync(imageDirectory, { recursive: true });
+mkdirSync(categoryImageDirectory, { recursive: true });
 
 const upload = multer({
   storage: multer.diskStorage({
     destination: imageDirectory,
+    filename: (_request, file, callback) => {
+      const type = allowedTypes.get(file.mimetype);
+      callback(null, `${randomUUID()}${type?.extension || ""}`);
+    },
+  }),
+  limits: { fileSize: maxImageSize, files: 1 },
+  fileFilter: (_request, file, callback) => {
+    if (!allowedTypes.has(file.mimetype)) {
+      callback(new Error("Choose a JPG, PNG, or WebP image."));
+      return;
+    }
+    callback(null, true);
+  },
+});
+
+const categoryUpload = multer({
+  storage: multer.diskStorage({
+    destination: categoryImageDirectory,
     filename: (_request, file, callback) => {
       const type = allowedTypes.get(file.mimetype);
       callback(null, `${randomUUID()}${type?.extension || ""}`);
@@ -67,13 +87,40 @@ async function removeUploadedFile(imageUrl) {
   });
 }
 
+async function removeCategoryImage(imageUrl) {
+  if (!imageUrl?.startsWith("/uploads/categories/")) return;
+  const fileName = path.basename(imageUrl);
+  if (!fileName) return;
+  await unlink(path.join(categoryImageDirectory, fileName)).catch((error) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+}
+
 async function removeTemporaryUpload(file) {
   if (!file?.path) return;
   await unlink(file.path).catch((error) => {
     if (error.code !== "ENOENT") {
-      console.error("Unable to remove uploaded product image:", error);
+      console.error("Unable to remove temporary image upload:", error);
     }
   });
+}
+
+async function validateCategoryImage(file) {
+  const type = allowedTypes.get(file.mimetype);
+  const fileHandle = await open(file.path, "r");
+  const header = Buffer.alloc(type.signature.length);
+  try {
+    await fileHandle.read(header, 0, header.length, 0);
+  } finally {
+    await fileHandle.close();
+  }
+
+  if (!type.signature.every((byte, index) => header[index] === byte)) {
+    throw Object.assign(new Error("The uploaded file does not match its image format."), {
+      status: 400,
+    });
+  }
+  return `/uploads/categories/${file.filename}`;
 }
 
 const productFields = {
@@ -126,7 +173,8 @@ router.get("/", async (req, res) => {
 
 router.get("/categories", async (_req, res) => {
   const result = await pool.query(
-    `SELECT categories.name AS category, COUNT(products.id)::int AS product_count
+    `SELECT categories.name AS category, categories.image_url,
+            COUNT(products.id)::int AS product_count
      FROM product_categories AS categories
      LEFT JOIN products ON products.category = categories.name AND products.active = TRUE
      GROUP BY categories.name ORDER BY categories.name`
@@ -134,58 +182,129 @@ router.get("/categories", async (_req, res) => {
   return res.json({ categories: result.rows });
 });
 
-router.post("/categories", requireAuth, requireAdmin, async (req, res) => {
+router.post("/categories", requireAuth, requireAdmin, categoryUpload.single("image"), async (req, res) => {
   const name = typeof req.body?.name === "string" ? req.body.name.trim() : "";
   if (!name || name.length > 80) {
+    if (req.file) await removeTemporaryUpload(req.file);
     return res.status(400).json({ message: "Category names must be between 1 and 80 characters." });
   }
 
-  const result = await pool.query(
-    `INSERT INTO product_categories (name) VALUES ($1)
-     ON CONFLICT (name) DO NOTHING
-     RETURNING name`,
-    [name]
-  );
-  if (!result.rowCount) return res.status(409).json({ message: "That category already exists." });
-  return res.status(201).json({ category: result.rows[0].name, product_count: 0 });
+  let imageUrl;
+  try {
+    if (req.file) imageUrl = await validateCategoryImage(req.file);
+    const result = await pool.query(
+      `INSERT INTO product_categories (name, image_url) VALUES ($1, $2)
+       ON CONFLICT (name) DO NOTHING
+       RETURNING name, image_url`,
+      [name, imageUrl || null]
+    );
+    if (!result.rowCount) {
+      await removeCategoryImage(imageUrl);
+      return res.status(409).json({ message: "That category already exists." });
+    }
+    return res.status(201).json({
+      category: result.rows[0].name,
+      image_url: result.rows[0].image_url,
+      product_count: 0,
+    });
+  } catch (error) {
+    if (req.file) {
+      await removeCategoryImage(imageUrl || `/uploads/categories/${req.file.filename}`);
+    }
+    throw error;
+  }
 });
 
-router.patch("/categories/:category", requireAuth, requireAdmin, async (req, res) => {
+router.patch("/categories/:category", requireAuth, requireAdmin, categoryUpload.single("image"), async (req, res) => {
   const oldCategory = req.params.category;
   const newCategory = typeof req.body?.name === "string" ? req.body.name.trim() : "";
   if (!newCategory || newCategory.length > 80) {
+    if (req.file) await removeTemporaryUpload(req.file);
     return res.status(400).json({ message: "Category names must be between 1 and 80 characters." });
   }
-  if (oldCategory === newCategory) {
+  let newImageUrl;
+  try {
+    if (req.file) newImageUrl = await validateCategoryImage(req.file);
+  } catch (error) {
+    await removeTemporaryUpload(req.file);
+    throw error;
+  }
+  if (oldCategory === newCategory && !newImageUrl) {
+    if (req.file) await removeTemporaryUpload(req.file);
     return res.status(400).json({ message: "Choose a different category name." });
   }
 
   const client = await pool.connect();
+  let oldImageUrl;
+  let destinationImageUrl;
+  let savedImageUrl;
   try {
     await client.query("BEGIN");
     const category = await client.query(
-      "SELECT name FROM product_categories WHERE name = $1 FOR UPDATE",
+      "SELECT name, image_url FROM product_categories WHERE name = $1 FOR UPDATE",
       [oldCategory]
     );
     if (!category.rowCount) {
       await client.query("ROLLBACK");
+      if (newImageUrl) await removeCategoryImage(newImageUrl);
       return res.status(404).json({ message: "Category not found." });
     }
 
-    await client.query(
-      "INSERT INTO product_categories (name) VALUES ($1) ON CONFLICT (name) DO NOTHING",
-      [newCategory]
-    );
-    const result = await client.query(
-      `UPDATE products SET category = $1, updated_at = NOW()
-       WHERE category = $2 RETURNING id`,
-      [newCategory, oldCategory]
-    );
-    await client.query("DELETE FROM product_categories WHERE name = $1", [oldCategory]);
+    oldImageUrl = category.rows[0].image_url;
+    if (oldCategory === newCategory) {
+      const updated = await client.query(
+        `UPDATE product_categories SET image_url = $1
+         WHERE name = $2 RETURNING image_url`,
+        [newImageUrl || oldImageUrl, oldCategory]
+      );
+      savedImageUrl = updated.rows[0].image_url;
+    } else {
+      const destination = await client.query(
+        "SELECT image_url FROM product_categories WHERE name = $1 FOR UPDATE",
+        [newCategory]
+      );
+      destinationImageUrl = destination.rows[0]?.image_url;
+      const upserted = await client.query(
+        `INSERT INTO product_categories (name, image_url) VALUES ($1, $2)
+         ON CONFLICT (name) DO UPDATE
+         SET image_url = COALESCE(EXCLUDED.image_url, product_categories.image_url)
+         RETURNING image_url`,
+        [newCategory, newImageUrl || oldImageUrl || null]
+      );
+      savedImageUrl = upserted.rows[0].image_url;
+      const result = await client.query(
+        `UPDATE products SET category = $1, updated_at = NOW()
+         WHERE category = $2 RETURNING id`,
+        [newCategory, oldCategory]
+      );
+      await client.query("DELETE FROM product_categories WHERE name = $1", [oldCategory]);
+      await client.query("COMMIT");
+      if (oldImageUrl && oldImageUrl !== savedImageUrl) {
+        await removeCategoryImage(oldImageUrl).catch((error) => {
+          console.error("Unable to remove previous category image:", error);
+        });
+      }
+      if (destinationImageUrl && destinationImageUrl !== savedImageUrl) {
+        await removeCategoryImage(destinationImageUrl).catch((error) => {
+          console.error("Unable to remove replaced category image:", error);
+        });
+      }
+      return res.json({
+        category: newCategory,
+        updatedProducts: result.rowCount,
+        image_url: savedImageUrl,
+      });
+    }
     await client.query("COMMIT");
-    return res.json({ category: newCategory, updatedProducts: result.rowCount });
+    if (newImageUrl && oldImageUrl && oldImageUrl !== savedImageUrl) {
+      await removeCategoryImage(oldImageUrl).catch((error) => {
+        console.error("Unable to remove previous category image:", error);
+      });
+    }
+    return res.json({ category: newCategory, updatedProducts: 0, image_url: savedImageUrl });
   } catch (error) {
     await client.query("ROLLBACK");
+    if (newImageUrl) await removeCategoryImage(newImageUrl);
     throw error;
   } finally {
     client.release();

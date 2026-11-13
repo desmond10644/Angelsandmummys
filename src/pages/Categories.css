@@ -7,27 +7,41 @@
 }
 
 .am-categories-header {
-  text-align: center;
-  padding: 45px 15px;
-  background: #fbf1f4;
+  min-height: 165px;
+  padding: 24px 36px;
+  display: flex;
+  align-items: center;
   border-radius: 12px;
   margin-bottom: 35px;
+  background:
+    linear-gradient(90deg, rgba(47, 29, 38, 0.78), rgba(47, 29, 38, 0.18)),
+    var(--am-category-hero-image) center 45% / cover,
+    #fbf1f4;
+  color: #fff;
+  text-align: left;
 }
 
 .am-categories-header span {
-  color: #ad0865;
+  color: #ffe3f1;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.5px;
 }
 
 .am-categories-header h1 {
-  font-size: 38px;
+  color: #fff;
+  font-size: 34px;
   margin: 10px 0;
 }
 
 .am-categories-header p {
-  color: #766d70;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.am-categories-error {
+  color: #a43d50;
+  text-align: center;
 }
 
 .am-categories-grid {
@@ -59,6 +73,11 @@
   }
 
   .am-categories-header h1 {
-    font-size: 29px;
+    font-size: 28px;
+  }
+
+  .am-categories-header {
+    min-height: 145px;
+    padding: 22px;
   }
 }
