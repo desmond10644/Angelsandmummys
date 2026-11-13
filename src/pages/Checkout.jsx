@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { useStore } from "../context/useStore";
 import { useAuth } from "../context/useAuth";
-import "./Checkout.css";
+import "./checkout.css";
 
 function Checkout() {
   const navigate = useNavigate();

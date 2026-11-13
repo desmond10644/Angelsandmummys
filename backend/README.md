@@ -61,9 +61,9 @@ dashboard; the API does not allow public registration to assign the admin role.
 | PUT | `/api/hero-slides/admin/order` | Admin | Save homepage slide order |
 
 Orders are recorded as unpaid; these endpoints do not collect or verify
-payments. The server calculates totals from database prices and each product's
-delivery price multiplied by its quantity. Configure delivery prices when
-adding or editing products; existing products default to free delivery.
+payments. The server calculates totals from current database prices and each
+product's delivery price multiplied by its quantity. Configure delivery prices
+when adding or editing products; existing products default to free delivery.
 
 For hosting, configure the same backend variables in the hosting provider's
 environment-variable settings, and set `FRONTEND_URL` to the deployed
@@ -82,7 +82,8 @@ persistent directory when deploying.
 
 Product images use the same persistent upload directory and file constraints.
 The product form requires an image when creating a product and allows replacing
-it while editing. Admins can rename categories and add or replace category
+it while editing. Admins can set each product's delivery price per unit when
+creating or editing a product, rename categories, and add or replace category
 images in the dashboard. A category image appears as the banner on that
 category's shop page. Category image uploads must be JPG, PNG, or WebP and no
 larger than 8 MB. Category records are migrated from existing product data and
